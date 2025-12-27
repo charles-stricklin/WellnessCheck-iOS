@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		56622B612EFF1DD4006A7C65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56622B602EFF1DD4006A7C65 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		56622B602EFF1DD4006A7C65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56BC00202EFA297700B2FA74 /* WellnessCheck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WellnessCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -32,6 +37,7 @@
 		56BC00172EFA297700B2FA74 = {
 			isa = PBXGroup;
 			children = (
+				56622B602EFF1DD4006A7C65 /* Assets.xcassets */,
 				56BC00222EFA297700B2FA74 /* WellnessCheck */,
 				56BC00212EFA297700B2FA74 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56622B612EFF1DD4006A7C65 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

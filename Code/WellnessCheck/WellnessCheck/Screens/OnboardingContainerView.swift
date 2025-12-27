@@ -106,6 +106,7 @@ struct OnboardingContainerView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
         }
         .onChange(of: viewModel.isOnboardingComplete) { oldValue, newValue in
             if newValue {
@@ -123,13 +124,19 @@ private struct ProgressIndicator: View {
     let totalSteps: Int
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 8) {
             ForEach(0..<totalSteps, id: \.self) { index in
                 Circle()
-                    .fill(index <= currentStep ? Color.blue : Color.gray.opacity(0.3))
+                    .fill(index <= currentStep ? Color.blue : Color.white)
                     .frame(width: 8, height: 8)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            Capsule()
+                .fill(Color(white: 0.4, opacity: 1.0))
+        )
     }
 }
 

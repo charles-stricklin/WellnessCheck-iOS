@@ -542,6 +542,23 @@ Please provide:
 - Code maintainability over clever shortcuts
 - Educational explanations are welcome
 
+### Learning Resources & Best Practices
+Charles will frequently share PDFs from Medium and other technical sources covering:
+- Modern Swift/SwiftUI patterns and best practices
+- iOS development techniques and optimizations
+- Architecture patterns and design principles
+- Industry standards and cutting-edge approaches
+
+**Claude should:**
+- Carefully evaluate each shared article
+- Extract applicable patterns and techniques
+- Integrate relevant best practices into WellnessCheck codebase
+- Flag outdated or conflicting information
+- Suggest when to apply learned concepts to current work
+- Keep the codebase modern and following current iOS development standards
+
+**Goal:** Apply cutting-edge, production-quality iOS development practices while maintaining code clarity and maintainability
+
 ---
 
 ## Version History

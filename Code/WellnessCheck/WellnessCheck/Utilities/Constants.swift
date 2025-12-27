@@ -61,5 +61,5 @@ struct Constants {
     static let appName = "WellnessCheck"
 
     /// App tagline
-    static let appTagline = "Your safety net, always there"
+    static let appTagline = "Living alone doesn't mean having to be alone."
 }

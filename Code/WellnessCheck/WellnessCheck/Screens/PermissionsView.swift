@@ -20,7 +20,10 @@ struct PermissionsView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: Constants.largeSpacing) {
+        ScrollView {
+            VStack(spacing: Constants.largeSpacing) {
+            Spacer(minLength: 40)
+            
             // Header
             VStack(spacing: 12) {
                 Image(systemName: "lock.shield.fill")
@@ -39,7 +42,6 @@ struct PermissionsView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Constants.standardSpacing)
             }
-            .padding(.top, Constants.largeSpacing)
 
             Spacer()
 
@@ -120,6 +122,7 @@ struct PermissionsView: View {
             .disabled(!viewModel.canProceed())
             .padding(.horizontal, Constants.standardSpacing)
             .padding(.bottom, Constants.standardSpacing)
+            }
         }
     }
 }
