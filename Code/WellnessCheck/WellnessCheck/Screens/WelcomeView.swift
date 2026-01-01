@@ -2,219 +2,148 @@
 //  WelcomeView.swift
 //  WellnessCheck
 //
-//  Created: v0.1.0 (2025-12-26)
-//  Last Modified: v0.1.0 (2025-12-26)
+//  Created by Charles W. Stricklin on 12/31/24.
 //
-//  By Charles Stricklin, Stricklin Development, LLC
+//  First screen seniors see when opening WellnessCheck for the first time.
+//  Establishes emotional connection, explains the core promise (you're not alone),
+//  and invites them to explore how it works. Calm, reassuring, patient tone.
+//  No rush, no pressure - just understanding and support.
 //
 
 import SwiftUI
 
-/// First screen in the onboarding flow - introduces WellnessCheck to the user
 struct WelcomeView: View {
     // MARK: - Properties
-
+    @Environment(\.colorScheme) var colorScheme
     let onContinue: () -> Void
     
-    @Environment(\.colorScheme) var colorScheme
+    @State private var showingCaregiverInfo = false
     
-    // Brand colors
-    private var backgroundColor: Color {
-        colorScheme == .dark ? Color(hex: "#1A3A52") : Color(hex: "#C8E6F5")
-    }
-    
-    private var accentColor: Color {
-        colorScheme == .dark ? Color(hex: "#C8E6F5") : Color(hex: "#1A3A52")
-    }
-
     // MARK: - Body
-
     var body: some View {
-        ScrollView {
-            ZStack {
-                // Background color
-                backgroundColor.ignoresSafeArea()
+        ZStack {
+            // Background
+            backgroundColor
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Spacer()
                 
-                VStack(spacing: 10) {
-                    content
+                // Top section - Logo and tagline
+                VStack(spacing: 16) {
+                    // WellnessCheck app icon
+                    Image("WelcomeIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
+                    
+                    Text("WellnessCheck")
+                        .font(.system(size: 36, weight: .bold))
+                        .foregroundColor(primaryTextColor)
+                    
+                    Text("Living alone doesn't mean having to be alone")
+                        .font(.system(size: 20))
+                        .foregroundColor(secondaryTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.top, 20)
+                
+                Spacer()
+                    .frame(height: 60)
+                
+                // Middle section - Care Circle illustration
+                VStack(spacing: 32) {
+                    // Main illustration
+                    Image("CareCircleIllustration")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 320, maxHeight: 320)
+                        .padding(.horizontal, 24)
+                    
+                    // Primary message
+                    VStack(spacing: 20) {
+                        Text("Stay connected to the people who care about you. If something happens, they'll know right away.")
+                            .font(.system(size: 22, weight: .medium))
+                            .foregroundColor(primaryTextColor)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                            .fixedSize(horizontal: false, vertical: true)
+                        
+                        Text("WellnessCheck gives you independence and gives them peace of mind.")
+                            .font(.system(size: 20))
+                            .foregroundColor(secondaryTextColor)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                
+                Spacer()
+                    .frame(height: 60)
+                
+                // Bottom section - Action button
+                VStack(spacing: 16) {
+                    // Main action button
+                    Button(action: onContinue) {
+                        Text("Show Me How This Works")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 70)
+                            .background(Color("#1A3A52"))
+                            .cornerRadius(16)
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    // Caregiver setup link
+                    Button(action: {
+                        showingCaregiverInfo = true
+                    }) {
+                        Text("I'm helping someone set this up")
+                            .font(.system(size: 18))
+                            .foregroundColor(secondaryTextColor)
+                    }
+                    .padding(.bottom, 32)
+                }
             }
         }
-        .background(backgroundColor.ignoresSafeArea())
+        .alert("Setting Up for Someone Else", isPresented: $showingCaregiverInfo) {
+            Button("Continue with Setup", role: .cancel) {
+                onContinue()
+            }
+        } message: {
+            Text("Great! You can complete the setup for your loved one. They'll need to approve Care Circle connections on their device later.")
+        }
     }
     
-    private var content: some View {
-        Group {
-			// App icon with version badge
-            ZStack(alignment: .bottomTrailing) {
-                Image("WelcomeIcon")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 250, height: 250)
-                
-                // Version number to the right of heart
-                Text("v0.1.0")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(accentColor.opacity(0.6))
-                    .offset(x: -40, y: -44)
-            }
-            .padding(.bottom, 8)
-
-            // App name
-            Text(Constants.appName)
-                .font(.system(size: Constants.titleTextSize, weight: .bold))
-                .foregroundColor(accentColor)
-
-            // Tagline
-            Text(Constants.appTagline)
-                .font(.system(size: 17))
-                .italic()
-                .foregroundColor(accentColor.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, Constants.standardSpacing)
-                .padding(.top, 2)
-                .padding(.bottom, 20)
-
-            // Features header
-            Text("WellnessCheck provides")
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(accentColor)
-                .padding(.horizontal, Constants.standardSpacing)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.bottom, 8)
-
-            // Key features section
-            VStack(alignment: .leading, spacing: 16) {
-                FeatureRow(
-                    icon: "figure.fall",
-                    title: "Fall Detection",
-                    description: "Automatic alerts if a fall is detected"
-                )
-
-                FeatureRow(
-                    icon: "bell.fill",
-                    title: "Inactivity Monitoring",
-                    description: "Check-ins when you're inactive too long"
-                )
-
-                FeatureRow(
-                    icon: "person.2.fill",
-                    title: "A Care Circle",
-                    description: "Connect with family and friends"
-                )
-
-                FeatureRow(
-                    icon: "lock.shield.fill",
-                    title: "Privacy First",
-                    description: "Your health data stays on your device"
-                )
-            }
-            .padding(.horizontal, Constants.standardSpacing)
-
-            Spacer(minLength: 16)
-
-            // Disclaimer
-            VStack(spacing: 12) {
-                Text("Important Safety Information")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.primary)
-
-                Text("WellnessCheck is a wellness monitoring tool designed to provide peace of mind. It is NOT a medical device and should NOT replace professional medical care or emergency services. In case of emergency, always call 911 immediately.")
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Constants.standardSpacing)
-            }
-            .padding(.vertical, Constants.standardSpacing)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(Constants.cornerRadius)
-            .padding(.horizontal, Constants.standardSpacing)
-
-            // Continue button
-            LargeButton(
-                title: "Get Started",
-                systemImage: "arrow.right",
-                backgroundColor: .blue,
-                action: onContinue
-            )
-            .padding(.horizontal, Constants.standardSpacing)
-            .padding(.bottom, Constants.standardSpacing)
-        }
+    // MARK: - Computed Properties
+    
+    private var backgroundColor: Color {
+        colorScheme == .dark ? Color.black : Color("#C8E6F5")
     }
-}
-
-// MARK: - Color Extension
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
+    
+    private var primaryTextColor: Color {
+        colorScheme == .dark ? Color.white : Color("#1A3A52")
     }
-}
-
-// MARK: - Feature Row Component
-
-/// Single feature row showing icon, title, and description
-private struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
-
-    var body: some View {
-        HStack(spacing: 16) {
-            // Icon circle
-            ZStack {
-                Circle()
-                    .fill(Color.blue.opacity(0.1))
-                    .frame(width: 50, height: 50)
-
-                Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(.blue)
-            }
-
-            // Text content
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(description)
-                    .font(.system(size: 16))
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer()
-        }
+    
+    private var secondaryTextColor: Color {
+        colorScheme == .dark ? Color.gray : Color.gray
     }
 }
 
 // MARK: - Preview
 
-#Preview {
+#Preview("Light Mode") {
     WelcomeView {
         print("Continue tapped")
     }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    WelcomeView {
+        print("Continue tapped")
+    }
+    .preferredColorScheme(.dark)
 }
