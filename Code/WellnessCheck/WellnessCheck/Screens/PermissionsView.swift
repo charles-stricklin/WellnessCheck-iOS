@@ -32,7 +32,7 @@ struct PermissionsView: View {
                     .frame(width: 80, height: 80)
                     .foregroundStyle(.blue.gradient)
 
-                Text("Permissions Needed")
+                Text("Great, \(viewModel.userName.isEmpty ? "" : viewModel.userName)! Now let's set up permissions")
                     .font(.system(size: Constants.headerTextSize, weight: .bold))
                     .foregroundColor(.primary)
 

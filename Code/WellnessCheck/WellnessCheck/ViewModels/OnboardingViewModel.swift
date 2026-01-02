@@ -49,21 +49,33 @@ class OnboardingViewModel: ObservableObject {
     /// Defines the sequence of onboarding screens
     enum OnboardingStep: Int, CaseIterable {
         case welcome = 0
+        case howItWorks
+        case privacy
+        case contactSelection
+        case whyPermissions
         case permissions
-        case profileSetup
-        case careCircleIntro
+        case careCircleSetup
+        case customizeMonitoring
         case complete
 
         var title: String {
             switch self {
             case .welcome:
                 return "Welcome"
+            case .howItWorks:
+                return "How It Works"
+            case .privacy:
+                return "Privacy"
+            case .contactSelection:
+                return "Contact Selection"
+            case .whyPermissions:
+                return "Why Permissions"
             case .permissions:
                 return "Permissions"
-            case .profileSetup:
-                return "Profile Setup"
-            case .careCircleIntro:
+            case .careCircleSetup:
                 return "Care Circle"
+            case .customizeMonitoring:
+                return "Settings"
             case .complete:
                 return "Complete"
             }
@@ -73,6 +85,13 @@ class OnboardingViewModel: ObservableObject {
     // MARK: - Initialization
 
     init() {
+        // DEVELOPMENT ONLY - Clear onboarding data on every launch
+        #if DEBUG
+        userDefaults.removeObject(forKey: Constants.hasCompletedOnboardingKey)
+        userDefaults.removeObject(forKey: Constants.userNameKey)
+        userDefaults.removeObject(forKey: Constants.userPhoneKey)
+        #endif
+        
         checkExistingPermissions()
     }
 
@@ -98,13 +117,13 @@ class OnboardingViewModel: ObservableObject {
     /// Checks if user can proceed from current step
     func canProceed() -> Bool {
         switch currentStep {
-        case .welcome:
+        case .welcome, .howItWorks, .privacy, .whyPermissions:
             return true
+        case .contactSelection:
+            return !userName.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)
         case .permissions:
             return hasHealthKitPermission && hasNotificationPermission
-        case .profileSetup:
-            return !userName.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)
-        case .careCircleIntro:
+        case .careCircleSetup, .customizeMonitoring:
             return true
         case .complete:
             return true

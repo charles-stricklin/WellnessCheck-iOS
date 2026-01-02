@@ -29,7 +29,8 @@ struct ProfileSetupView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: Constants.largeSpacing) {
+        ScrollView {
+            VStack(spacing: Constants.largeSpacing) {
             // Header
             VStack(spacing: 12) {
                 Image(systemName: "person.circle.fill")
@@ -56,18 +57,18 @@ struct ProfileSetupView: View {
             VStack(spacing: Constants.standardSpacing) {
                 // Name field
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Your Name")
+                    Text("Your First Name")
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
 
-                    TextField("John Doe", text: $viewModel.userName)
+                    TextField("John", text: $viewModel.userName)
                         .font(.system(size: Constants.bodyTextSize))
                         .padding()
                         .frame(height: Constants.minTouchTargetSize)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
                         .focused($focusedField, equals: .name)
-                        .textContentType(.name)
+                        .textContentType(.givenName)
                         .autocapitalization(.words)
                 }
 
@@ -97,6 +98,7 @@ struct ProfileSetupView: View {
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, Constants.standardSpacing)
@@ -128,18 +130,16 @@ struct ProfileSetupView: View {
             LargeButton(
                 title: "Continue",
                 systemImage: "arrow.right",
-                backgroundColor: viewModel.canProceed() ? .blue : .gray,
+                backgroundColor: .blue,
                 action: {
-                    if viewModel.canProceed() {
-                        // Dismiss keyboard
-                        focusedField = nil
-                        onContinue()
-                    }
+                    // Dismiss keyboard
+                    focusedField = nil
+                    onContinue()
                 }
             )
-            .disabled(!viewModel.canProceed())
             .padding(.horizontal, Constants.standardSpacing)
             .padding(.bottom, Constants.standardSpacing)
+        }
         }
         .contentShape(Rectangle())
         .onTapGesture {

@@ -17,8 +17,6 @@ struct WelcomeView: View {
     @Environment(\.colorScheme) var colorScheme
     let onContinue: () -> Void
     
-    @State private var showingCaregiverInfo = false
-    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -28,6 +26,7 @@ struct WelcomeView: View {
             
             VStack(spacing: 0) {
                 Spacer()
+                    .frame(height: 40)
                 
                 // Top section - Logo and tagline
                 VStack(spacing: 16) {
@@ -50,43 +49,31 @@ struct WelcomeView: View {
                 }
                 
                 Spacer()
-                    .frame(height: 60)
                 
-                // Middle section - Care Circle illustration
-                VStack(spacing: 32) {
-                    // Main illustration
-                    Image("CareCircleIllustration")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: 320, maxHeight: 320)
-                        .padding(.horizontal, 24)
+                // Message section
+                VStack(spacing: 20) {
+                    Text("Stay connected to the people who care about you. If something happens, they'll know right away.")
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundColor(primaryTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .fixedSize(horizontal: false, vertical: true)
                     
-                    // Primary message
-                    VStack(spacing: 20) {
-                        Text("Stay connected to the people who care about you. If something happens, they'll know right away.")
-                            .font(.system(size: 22, weight: .medium))
-                            .foregroundColor(primaryTextColor)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                            .fixedSize(horizontal: false, vertical: true)
-                        
-                        Text("WellnessCheck gives you independence and gives them peace of mind.")
-                            .font(.system(size: 20))
-                            .foregroundColor(secondaryTextColor)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    Text("WellnessCheck gives you independence and gives them peace of mind.")
+                        .font(.system(size: 20))
+                        .foregroundColor(secondaryTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 Spacer()
-                    .frame(height: 60)
                 
                 // Bottom section - Action button
                 VStack(spacing: 16) {
                     // Main action button
                     Button(action: onContinue) {
-                        Text("Show Me How This Works")
+                        Text("How WellnessCheck Works")
                             .font(.system(size: 22, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -95,25 +82,9 @@ struct WelcomeView: View {
                             .cornerRadius(16)
                     }
                     .padding(.horizontal, 24)
-                    
-                    // Caregiver setup link
-                    Button(action: {
-                        showingCaregiverInfo = true
-                    }) {
-                        Text("I'm helping someone set this up")
-                            .font(.system(size: 18))
-                            .foregroundColor(secondaryTextColor)
-                    }
                     .padding(.bottom, 32)
                 }
             }
-        }
-        .alert("Setting Up for Someone Else", isPresented: $showingCaregiverInfo) {
-            Button("Continue with Setup", role: .cancel) {
-                onContinue()
-            }
-        } message: {
-            Text("Great! You can complete the setup for your loved one. They'll need to approve Care Circle connections on their device later.")
         }
     }
     

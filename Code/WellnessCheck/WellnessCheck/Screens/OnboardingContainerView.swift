@@ -41,6 +41,42 @@ struct OnboardingContainerView: View {
                             removal: .move(edge: .leading)
                         ))
 
+                    case .howItWorks:
+                        HowItWorksView {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+
+                    case .privacy:
+                        PrivacyMattersView {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+
+                    case .contactSelection:
+                        ProfileSetupView(viewModel: viewModel) {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+
+                    case .whyPermissions:
+                        WhyPermissionsView(viewModel: viewModel) {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+
                     case .permissions:
                         PermissionsView(viewModel: viewModel) {
                             viewModel.goToNextStep()
@@ -50,16 +86,7 @@ struct OnboardingContainerView: View {
                             removal: .move(edge: .leading)
                         ))
 
-                    case .profileSetup:
-                        ProfileSetupView(viewModel: viewModel) {
-                            viewModel.goToNextStep()
-                        }
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .trailing),
-                            removal: .move(edge: .leading)
-                        ))
-
-                    case .careCircleIntro:
+                    case .careCircleSetup:
                         CareCircleIntroView(viewModel: viewModel) {
                             viewModel.goToNextStep()
                         }
@@ -67,6 +94,18 @@ struct OnboardingContainerView: View {
                             insertion: .move(edge: .trailing),
                             removal: .move(edge: .leading)
                         ))
+
+                    case .customizeMonitoring:
+                        VStack(spacing: 20) {
+                            Text("Customize Monitoring")
+                                .font(.title)
+                            Text("Coming Soon")
+                                .foregroundColor(.secondary)
+                            Button("Continue") {
+                                viewModel.goToNextStep()
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
 
                     case .complete:
                         // This case triggers the completion handler
@@ -133,10 +172,6 @@ private struct ProgressIndicator: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(
-            Capsule()
-                .fill(Color(white: 0.4, opacity: 1.0))
-        )
     }
 }
 
