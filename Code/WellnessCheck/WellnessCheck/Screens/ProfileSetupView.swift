@@ -18,6 +18,7 @@ struct ProfileSetupView: View {
     let onContinue: () -> Void
 
     @FocusState private var focusedField: Field?
+    @State private var showValidationAlert = false
 
     // MARK: - Focus State
 
@@ -182,25 +183,36 @@ struct ProfileSetupView: View {
             .padding(.horizontal, Constants.standardSpacing)
 
             // Continue button (with validation)
-            LargeButton(
-                title: "Continue",
-                systemImage: "arrow.right",
-                backgroundColor: isFormValid ? .blue : .gray,
-                action: {
+            Button(action: {
+                if isFormValid {
                     // Dismiss keyboard
                     focusedField = nil
                     onContinue()
+                } else {
+                    showValidationAlert = true
                 }
-            )
-            .disabled(!isFormValid)
-            .padding(.horizontal, Constants.standardSpacing)
-            .padding(.bottom, Constants.standardSpacing)
+            }) {
+                Text("Add Me")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 70)
+                    .background(isFormValid ? Color(red: 0.102, green: 0.227, blue: 0.322) : Color.gray)
+                    .cornerRadius(16)
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
         }
         }
         .contentShape(Rectangle())
         .onTapGesture {
             // Dismiss keyboard when tapping outside fields
             focusedField = nil
+        }
+        .alert("Please Complete All Required Fields", isPresented: $showValidationAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Please fill in your first name, last name, and phone number to continue.")
         }
     }
     

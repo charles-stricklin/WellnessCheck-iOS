@@ -16,6 +16,8 @@ struct WhyHealthDataView: View {
     @ObservedObject var viewModel: OnboardingViewModel
     let onContinue: () -> Void
     
+    @State private var isRequestingPermission = false
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -132,16 +134,31 @@ struct WhyHealthDataView: View {
                     Spacer()
                         .frame(height: 20)
                     
-                    // Continue button
-                    Button(action: onContinue) {
-                        Text("I Understand")
-                            .font(.system(size: 22, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 70)
-                            .background(Color(red: 0.102, green: 0.227, blue: 0.322))
-                            .cornerRadius(16)
+                    // Request permission button
+                    Button(action: {
+                        Task {
+                            isRequestingPermission = true
+                            await viewModel.requestHealthKitPermission()
+                            isRequestingPermission = false
+                            // Proceed to next screen after permission request
+                            onContinue()
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            if isRequestingPermission {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            }
+                            Text(isRequestingPermission ? "Requesting..." : "Yes, I Allow Access")
+                                .font(.system(size: 22, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 70)
+                        .background(Color(red: 0.102, green: 0.227, blue: 0.322))
+                        .cornerRadius(16)
                     }
+                    .disabled(isRequestingPermission)
                     .padding(.horizontal, 24)
                     
                     Spacer()

@@ -60,7 +60,6 @@ class OnboardingViewModel: ObservableObject {
         case contactSelection
         case whyNotifications
         case whyHealthData
-        case permissions
         case careCircleSetup
         case customizeMonitoring
         case complete
@@ -79,8 +78,6 @@ class OnboardingViewModel: ObservableObject {
                 return "Why Notifications"
             case .whyHealthData:
                 return "Why Health Data"
-            case .permissions:
-                return "Permissions"
             case .careCircleSetup:
                 return "Care Circle"
             case .customizeMonitoring:
@@ -101,6 +98,10 @@ class OnboardingViewModel: ObservableObject {
         userDefaults.removeObject(forKey: Constants.userSurnameKey)
         userDefaults.removeObject(forKey: Constants.userPhoneKey)
         userDefaults.removeObject(forKey: Constants.userEmailKey)
+        
+        // Reset permission flags
+        hasHealthKitPermission = false
+        hasNotificationPermission = false
         #endif
         
         checkExistingPermissions()
@@ -132,8 +133,6 @@ class OnboardingViewModel: ObservableObject {
             return true
         case .contactSelection:
             return !userName.isEmpty && !userSurname.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)
-        case .permissions:
-            return hasHealthKitPermission && hasNotificationPermission
         case .careCircleSetup, .customizeMonitoring:
             return true
         case .complete:
@@ -175,18 +174,24 @@ class OnboardingViewModel: ObservableObject {
         }
 
         // Define the health data types we want to read
-        guard let fallType = HKObjectType.categoryType(forIdentifier: .appleStandHour),
-              let activeEnergyType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned),
-              let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+        var typesToRead: Set<HKObjectType> = []
+        
+        // Add activity types
+        if let activeEnergyType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+            typesToRead.insert(activeEnergyType)
+        }
+        if let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) {
+            typesToRead.insert(stepCountType)
+        }
+        if let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) {
+            typesToRead.insert(distanceType)
+        }
+        
+        // Check if we have any types to request
+        guard !typesToRead.isEmpty else {
             errorMessage = "Unable to access HealthKit data types"
             return
         }
-
-        let typesToRead: Set<HKObjectType> = [
-            fallType,
-            activeEnergyType,
-            stepCountType
-        ]
 
         do {
             try await healthStore.requestAuthorization(toShare: [], read: typesToRead)

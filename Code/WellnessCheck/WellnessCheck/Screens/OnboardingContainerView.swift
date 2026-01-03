@@ -86,15 +86,6 @@ struct OnboardingContainerView: View {
                             removal: .move(edge: .leading)
                         ))
 
-                    case .permissions:
-                        PermissionsView(viewModel: viewModel) {
-                            viewModel.goToNextStep()
-                        }
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .trailing),
-                            removal: .move(edge: .leading)
-                        ))
-
                     case .careCircleSetup:
                         CareCircleIntroView(viewModel: viewModel) {
                             viewModel.goToNextStep()
@@ -140,16 +131,6 @@ struct OnboardingContainerView: View {
                             }
                             .foregroundColor(.blue)
                         }
-                    }
-                }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    // Progress indicator
-                    if viewModel.currentStep != .complete {
-                        ProgressIndicator(
-                            currentStep: viewModel.currentStep.rawValue,
-                            totalSteps: OnboardingViewModel.OnboardingStep.allCases.count - 1 // Exclude .complete
-                        )
                     }
                 }
             }

@@ -16,6 +16,8 @@ struct WhyNotificationsView: View {
     @ObservedObject var viewModel: OnboardingViewModel
     let onContinue: () -> Void
     
+    @State private var isRequestingPermission = false
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -33,7 +35,7 @@ struct WhyNotificationsView: View {
                         Image("Gladtomeetyou")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
+                            .frame(width: 120, height: 120)
                         
                         Text("Good to meet you, \(viewModel.userName)!")
                             .font(.system(size: 34, weight: .bold))
@@ -107,16 +109,31 @@ struct WhyNotificationsView: View {
                     Spacer()
                         .frame(height: 20)
                     
-                    // Continue button
-                    Button(action: onContinue) {
-                        Text("That Makes Sense")
-                            .font(.system(size: 22, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 70)
-                            .background(Color(red: 0.102, green: 0.227, blue: 0.322))
-                            .cornerRadius(16)
+                    // Request notification permission button
+                    Button(action: {
+                        Task {
+                            isRequestingPermission = true
+                            await viewModel.requestNotificationPermission()
+                            isRequestingPermission = false
+                            // Proceed to next screen after permission request
+                            onContinue()
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            if isRequestingPermission {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            }
+                            Text(isRequestingPermission ? "Requesting..." : "Yes, I Allow Notifications")
+                                .font(.system(size: 22, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 70)
+                        .background(Color(red: 0.102, green: 0.227, blue: 0.322))
+                        .cornerRadius(16)
                     }
+                    .disabled(isRequestingPermission)
                     .padding(.horizontal, 24)
                     
                     Spacer()
