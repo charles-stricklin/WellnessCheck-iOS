@@ -23,9 +23,15 @@ class OnboardingViewModel: ObservableObject {
 
     /// User's name (collected during profile setup)
     @Published var userName: String = ""
+    
+    /// User's surname (collected during profile setup)
+    @Published var userSurname: String = ""
 
     /// User's phone number (collected during profile setup)
     @Published var userPhone: String = ""
+    
+    /// User's email address (optional, collected during profile setup)
+    @Published var userEmail: String = ""
 
     /// Whether HealthKit permission has been granted
     @Published var hasHealthKitPermission: Bool = false
@@ -52,7 +58,8 @@ class OnboardingViewModel: ObservableObject {
         case howItWorks
         case privacy
         case contactSelection
-        case whyPermissions
+        case whyNotifications
+        case whyHealthData
         case permissions
         case careCircleSetup
         case customizeMonitoring
@@ -68,8 +75,10 @@ class OnboardingViewModel: ObservableObject {
                 return "Privacy"
             case .contactSelection:
                 return "Contact Selection"
-            case .whyPermissions:
-                return "Why Permissions"
+            case .whyNotifications:
+                return "Why Notifications"
+            case .whyHealthData:
+                return "Why Health Data"
             case .permissions:
                 return "Permissions"
             case .careCircleSetup:
@@ -89,7 +98,9 @@ class OnboardingViewModel: ObservableObject {
         #if DEBUG
         userDefaults.removeObject(forKey: Constants.hasCompletedOnboardingKey)
         userDefaults.removeObject(forKey: Constants.userNameKey)
+        userDefaults.removeObject(forKey: Constants.userSurnameKey)
         userDefaults.removeObject(forKey: Constants.userPhoneKey)
+        userDefaults.removeObject(forKey: Constants.userEmailKey)
         #endif
         
         checkExistingPermissions()
@@ -117,10 +128,10 @@ class OnboardingViewModel: ObservableObject {
     /// Checks if user can proceed from current step
     func canProceed() -> Bool {
         switch currentStep {
-        case .welcome, .howItWorks, .privacy, .whyPermissions:
+        case .welcome, .howItWorks, .privacy, .whyNotifications, .whyHealthData:
             return true
         case .contactSelection:
-            return !userName.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)
+            return !userName.isEmpty && !userSurname.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)
         case .permissions:
             return hasHealthKitPermission && hasNotificationPermission
         case .careCircleSetup, .customizeMonitoring:
@@ -245,7 +256,11 @@ class OnboardingViewModel: ObservableObject {
         // Save user data to UserDefaults (in production, this would go to Firebase)
         userDefaults.set(true, forKey: Constants.hasCompletedOnboardingKey)
         userDefaults.set(userName, forKey: Constants.userNameKey)
+        userDefaults.set(userSurname, forKey: Constants.userSurnameKey)
         userDefaults.set(userPhone, forKey: Constants.userPhoneKey)
+        if !userEmail.isEmpty {
+            userDefaults.set(userEmail, forKey: Constants.userEmailKey)
+        }
 
         isOnboardingComplete = true
     }

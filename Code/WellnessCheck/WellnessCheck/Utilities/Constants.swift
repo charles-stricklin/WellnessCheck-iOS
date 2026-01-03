@@ -51,9 +51,15 @@ struct Constants {
 
     /// Key for user's name
     static let userNameKey = "userName"
+    
+    /// Key for user's surname
+    static let userSurnameKey = "userSurname"
 
     /// Key for user's phone number
     static let userPhoneKey = "userPhone"
+    
+    /// Key for user's email address
+    static let userEmailKey = "userEmail"
 
     // MARK: - App Info
 

@@ -68,8 +68,17 @@ struct OnboardingContainerView: View {
                             removal: .move(edge: .leading)
                         ))
 
-                    case .whyPermissions:
-                        WhyPermissionsView(viewModel: viewModel) {
+                    case .whyNotifications:
+                        WhyNotificationsView(viewModel: viewModel) {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+                    
+                    case .whyHealthData:
+                        WhyHealthDataView(viewModel: viewModel) {
                             viewModel.goToNextStep()
                         }
                         .transition(.asymmetric(

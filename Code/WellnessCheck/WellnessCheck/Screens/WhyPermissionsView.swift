@@ -31,11 +31,12 @@ struct WhyPermissionsView: View {
                     
                     // Header
                     VStack(spacing: 12) {
-                        Image(systemName: "hand.raised.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                        Image("Gladtomeetyou")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80, height: 80)
                         
-                        Text("Great, \(viewModel.userName)!")
+                        Text("Good to meet you, \(viewModel.userName)!")
                             .font(.system(size: 34, weight: .bold))
                             .foregroundColor(primaryTextColor)
                         

@@ -3,7 +3,7 @@
 //  WellnessCheck
 //
 //  Created: v0.1.0 (2025-12-26)
-//  Last Modified: v0.1.0 (2025-12-26)
+//  Last Modified: v0.2.0 (2026-01-02)
 //
 //  By Charles Stricklin, Stricklin Development, LLC
 //
@@ -23,7 +23,9 @@ struct ProfileSetupView: View {
 
     private enum Field {
         case name
+        case surname
         case phone
+        case email
     }
 
     // MARK: - Body
@@ -55,11 +57,17 @@ struct ProfileSetupView: View {
 
             // Form fields
             VStack(spacing: Constants.standardSpacing) {
-                // Name field
+                // Name field (REQUIRED)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Your First Name")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.primary)
+                    HStack(spacing: 4) {
+                        Text("Your First Name")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.primary)
+                        
+                        Text("*")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.red)
+                    }
 
                     TextField("John", text: $viewModel.userName)
                         .font(.system(size: Constants.bodyTextSize))
@@ -71,12 +79,41 @@ struct ProfileSetupView: View {
                         .textContentType(.givenName)
                         .autocapitalization(.words)
                 }
-
-                // Phone number field
+                
+                // Surname field (REQUIRED)
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Phone Number")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.primary)
+                    HStack(spacing: 4) {
+                        Text("Your Last Name")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.primary)
+                        
+                        Text("*")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.red)
+                    }
+
+                    TextField("Doe", text: $viewModel.userSurname)
+                        .font(.system(size: Constants.bodyTextSize))
+                        .padding()
+                        .frame(height: Constants.minTouchTargetSize)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                        .focused($focusedField, equals: .surname)
+                        .textContentType(.familyName)
+                        .autocapitalization(.words)
+                }
+
+                // Phone number field (REQUIRED)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 4) {
+                        Text("Phone Number")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.primary)
+                        
+                        Text("*")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.red)
+                    }
 
                     TextField("(555) 123-4567", text: $viewModel.userPhone)
                         .font(.system(size: Constants.bodyTextSize))
@@ -91,6 +128,24 @@ struct ProfileSetupView: View {
                             // Auto-format phone number as user types
                             viewModel.userPhone = viewModel.formatPhoneNumber(newValue)
                         }
+                }
+                
+                // Email field (OPTIONAL)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Email (optional)")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.primary)
+
+                    TextField("john@example.com", text: $viewModel.userEmail)
+                        .font(.system(size: Constants.bodyTextSize))
+                        .padding()
+                        .frame(height: Constants.minTouchTargetSize)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                        .focused($focusedField, equals: .email)
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                        .autocapitalization(.none)
                 }
 
                 // Helper text
@@ -126,17 +181,18 @@ struct ProfileSetupView: View {
             .cornerRadius(Constants.cornerRadius)
             .padding(.horizontal, Constants.standardSpacing)
 
-            // Continue button
+            // Continue button (with validation)
             LargeButton(
                 title: "Continue",
                 systemImage: "arrow.right",
-                backgroundColor: .blue,
+                backgroundColor: isFormValid ? .blue : .gray,
                 action: {
                     // Dismiss keyboard
                     focusedField = nil
                     onContinue()
                 }
             )
+            .disabled(!isFormValid)
             .padding(.horizontal, Constants.standardSpacing)
             .padding(.bottom, Constants.standardSpacing)
         }
@@ -146,6 +202,17 @@ struct ProfileSetupView: View {
             // Dismiss keyboard when tapping outside fields
             focusedField = nil
         }
+    }
+    
+    // MARK: - Validation
+    
+    /// Check if required fields are filled
+    private var isFormValid: Bool {
+        let name = viewModel.userName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let surname = viewModel.userSurname.trimmingCharacters(in: .whitespacesAndNewlines)
+        let phone = viewModel.userPhone.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return !name.isEmpty && !surname.isEmpty && !phone.isEmpty
     }
 }
 
