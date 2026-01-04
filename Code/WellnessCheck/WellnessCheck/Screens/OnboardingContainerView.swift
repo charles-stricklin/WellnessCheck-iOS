@@ -32,6 +32,16 @@ struct OnboardingContainerView: View {
                 // Current onboarding screen
                 Group {
                     switch viewModel.currentStep {
+                    case .languageSelection:
+                        LanguageSelectionView { language in
+                            viewModel.selectedLanguage = language
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+                    
                     case .welcome:
                         WelcomeView {
                             viewModel.goToNextStep()
@@ -116,8 +126,8 @@ struct OnboardingContainerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    // Back button (hidden on first screen)
-                    if viewModel.currentStep != .welcome {
+                    // Back button (hidden on language selection screen)
+                    if viewModel.currentStep != .languageSelection && viewModel.currentStep != .welcome {
                         Button(action: {
                             withAnimation {
                                 viewModel.goToPreviousStep()

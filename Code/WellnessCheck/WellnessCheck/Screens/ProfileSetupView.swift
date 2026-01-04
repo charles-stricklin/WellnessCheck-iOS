@@ -9,6 +9,7 @@
 //
 
 import SwiftUI
+import Contacts
 
 /// Onboarding screen to collect user's basic profile information
 struct ProfileSetupView: View {
@@ -19,6 +20,7 @@ struct ProfileSetupView: View {
 
     @FocusState private var focusedField: Field?
     @State private var showValidationAlert = false
+    @State private var showContactPicker = false
 
     // MARK: - Focus State
 
@@ -51,6 +53,24 @@ struct ProfileSetupView: View {
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Constants.standardSpacing)
+                
+                // Use My Contact Card button
+                Button(action: {
+                    showContactPicker = true
+                }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "person.crop.circle.badge.checkmark")
+                            .font(.system(size: 18))
+                        Text("Use My Contact Card")
+                            .font(.system(size: 18, weight: .semibold))
+                    }
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(12)
+                }
+                .padding(.top, 8)
             }
             .padding(.top, Constants.largeSpacing)
 
@@ -213,6 +233,19 @@ struct ProfileSetupView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Please fill in your first name, last name, and phone number to continue.")
+        }
+        .sheet(isPresented: $showContactPicker) {
+            ContactPicker(isPresented: $showContactPicker) { contact in
+                // Fill in user info from selected contact
+                viewModel.userName = contact.firstName
+                viewModel.userSurname = contact.lastName
+                if let phone = contact.primaryPhoneNumber {
+                    viewModel.userPhone = viewModel.formatPhoneNumber(phone)
+                }
+                if let email = contact.primaryEmailAddress {
+                    viewModel.userEmail = email
+                }
+            }
         }
     }
     

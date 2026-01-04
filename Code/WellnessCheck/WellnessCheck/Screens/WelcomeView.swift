@@ -30,11 +30,19 @@ struct WelcomeView: View {
                 
                 // Top section - Logo and tagline
                 VStack(spacing: 16) {
-                    // WellnessCheck app icon
-                    Image("WelcomeIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 120, height: 120)
+                    // WellnessCheck app icon/logo
+                    if let _ = UIImage(named: "AppLogo") {
+                        Image("AppLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, height: 120)
+                    } else {
+                        // Fallback to WelcomeIcon if no AppLogo
+                        Image("WelcomeIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
+                    }
                     
                     Text("WellnessCheck")
                         .font(.system(size: 36, weight: .bold))

@@ -19,7 +19,7 @@ class OnboardingViewModel: ObservableObject {
     // MARK: - Published Properties
 
     /// Current step in the onboarding flow
-    @Published var currentStep: OnboardingStep = .welcome
+    @Published var currentStep: OnboardingStep = .languageSelection
 
     /// User's name (collected during profile setup)
     @Published var userName: String = ""
@@ -32,6 +32,9 @@ class OnboardingViewModel: ObservableObject {
     
     /// User's email address (optional, collected during profile setup)
     @Published var userEmail: String = ""
+    
+    /// User's selected language (en or es)
+    @Published var selectedLanguage: String = "en"
 
     /// Whether HealthKit permission has been granted
     @Published var hasHealthKitPermission: Bool = false
@@ -54,7 +57,8 @@ class OnboardingViewModel: ObservableObject {
 
     /// Defines the sequence of onboarding screens
     enum OnboardingStep: Int, CaseIterable {
-        case welcome = 0
+        case languageSelection = 0
+        case welcome = 1
         case howItWorks
         case privacy
         case contactSelection
@@ -66,6 +70,8 @@ class OnboardingViewModel: ObservableObject {
 
         var title: String {
             switch self {
+            case .languageSelection:
+                return "Language"
             case .welcome:
                 return "Welcome"
             case .howItWorks:
@@ -129,7 +135,7 @@ class OnboardingViewModel: ObservableObject {
     /// Checks if user can proceed from current step
     func canProceed() -> Bool {
         switch currentStep {
-        case .welcome, .howItWorks, .privacy, .whyNotifications, .whyHealthData:
+        case .languageSelection, .welcome, .howItWorks, .privacy, .whyNotifications, .whyHealthData:
             return true
         case .contactSelection:
             return !userName.isEmpty && !userSurname.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)

@@ -16,11 +16,18 @@ struct CareCircleIntroView: View {
 
     @ObservedObject var viewModel: OnboardingViewModel
     let onContinue: () -> Void
+    
+    @State private var showCareCircleList = false
+    @State private var hasOpenedList = false // Track if user has opened the list
 
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: Constants.largeSpacing) {
+        ScrollView {
+            VStack(spacing: Constants.largeSpacing) {
+            Spacer()
+                .frame(height: 40)
+            
             // Header
             VStack(spacing: 12) {
                 Image(systemName: "person.2.circle.fill")
@@ -39,9 +46,7 @@ struct CareCircleIntroView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Constants.standardSpacing)
             }
-            .padding(.top, Constants.largeSpacing)
-
-            Spacer()
+            .padding(.top, 0)
 
             // How it works section
             VStack(alignment: .leading, spacing: Constants.standardSpacing) {
@@ -123,8 +128,8 @@ struct CareCircleIntroView: View {
                     systemImage: "person.badge.plus",
                     backgroundColor: .blue,
                     action: {
-                        // TODO: Navigate to add Care Circle members flow
-                        onContinue()
+                        hasOpenedList = true
+                        showCareCircleList = true
                     }
                 )
 
@@ -138,6 +143,17 @@ struct CareCircleIntroView: View {
             }
             .padding(.horizontal, Constants.standardSpacing)
             .padding(.bottom, Constants.standardSpacing)
+            
+            Spacer()
+                .frame(height: 32)
+        }
+        }
+        .sheet(isPresented: $showCareCircleList) {
+            CareCircleListView {
+                // When user taps Continue in the list, close sheet and proceed
+                showCareCircleList = false
+                onContinue()
+            }
         }
     }
 }

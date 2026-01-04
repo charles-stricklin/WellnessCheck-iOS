@@ -40,6 +40,7 @@ struct WhyNotificationsView: View {
                         Text("Good to meet you, \(viewModel.userName)!")
                             .font(.system(size: 34, weight: .bold))
                             .foregroundColor(primaryTextColor)
+                            .multilineTextAlignment(.center)
                     }
                     
                     // Main explanation
