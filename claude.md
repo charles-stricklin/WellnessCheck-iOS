@@ -1,6 +1,6 @@
 # WellnessCheck - Project Context for Claude
 
-**Last Updated**: December 24, 2025  
+**Last Updated**: January 3, 2026  
 **Developer**: Charles W. Stricklin
 **Target Audience**: Solo dwellers (seniors and people medically at risk living alone) and their loved ones
 
@@ -592,6 +592,206 @@ Charles will frequently share PDFs from Medium and other technical sources cover
 
 **Remember**: You're building something that could genuinely help people. Take pride in code quality, prioritize user safety, and don't rush to launch.
 
+
+---
+
+## Session Log - January 3, 2026
+
+### Major Accomplishments - Onboarding Flow Complete (90%)
+
+**Language Selection Added (Screen 0)**
+- First screen users see before onboarding begins
+- English 🇺🇸 and Español 🇪🇸 options
+- Big, clear buttons with flags and labels
+- Bilingual prompt ("Choose Your Language" / "Elige tu idioma")
+- Sets foundation for future localization
+- San Antonio demographics: ~64% Hispanic/Latino makes Spanish essential
+
+**Complete Care Circle Management System Built**
+- **CareCircleMember Model**: firstName, lastName, phone, email, relationship, isPrimary, notificationPreference
+- **CareCircleViewModel**: Full CRUD operations (Create, Read, Update, Delete)
+  - Add/update/delete members
+  - Set primary contact
+  - Saves to UserDefaults (Firebase integration later)
+- **Three New Screens Created:**
+  1. **CareCircleListView**: Shows all members, empty state, two action buttons
+  2. **AddCareCircleMemberView**: Full form with validation, all fields
+  3. **EditCareCircleMemberView**: Edit relationship, remove member
+
+**iOS Contacts Integration Throughout**
+- **ContactPicker Component**: Reusable contact selection with CNContactPickerViewController
+- **ProfileSetupView**: "Use My Contact Card" button auto-fills user info
+- **AddCareCircleMemberView**: "Choose from Contacts" button auto-fills member info
+- **CareCircleListView**: Two-button approach:
+  - "Add from Contacts" (primary) - instant add with relationship prompt
+  - "Add Manually" (secondary) - full form for manual entry
+- Requires NSContactsUsageDescription in Info.plist
+
+**Onboarding Flow Refinements**
+- **Progress dots removed**: Less intimidating (was showing 9+ screens upfront)
+- **Permission screens split**: 
+  - Screen 5A: Why Notifications → Direct iOS permission request
+  - Screen 5B: Why Health Data → Direct HealthKit permission request
+  - Removed redundant PermissionsView summary screen
+- **Profile setup enhanced** (Screen 4):
+  - Added surname field (required)
+  - Added email field (optional)
+  - Red asterisks (*) mark required fields
+  - Button changed: "Continue" → "Add Me" (more personal)
+  - Validation alert when incomplete
+- **HealthKit permission working**: Fixed by adding proper Info.plist entries and improved error handling
+- **"Good to meet you, [NAME]!" centered** on greeting screen
+- **Care Circle flow streamlined**: Users stay in CareCircleListView after adding members (no bounce back to intro)
+
+**Logo/Icon Consistency**
+- Both Language Selection and Welcome screens now check for "AppLogo" asset first
+- Falls back to appropriate placeholder if AppLogo doesn't exist
+- Consistent branding across first two screens
+
+### Technical Files Created
+
+**New Components:**
+1. `/Screens/LanguageSelectionView.swift` - Language choice screen
+2. `/Models/CareCircleMember.swift` - Member data model
+3. `/ViewModels/CareCircleViewModel.swift` - Care Circle state management
+4. `/Screens/AddCareCircleMemberView.swift` - Add member form
+5. `/Screens/CareCircleListView.swift` - Member list with actions
+6. `/Screens/EditCareCircleMemberView.swift` - Edit/delete member
+7. `/Shared/ContactPicker.swift` - Reusable contact picker
+8. `/Shared/LargeOutlineButton.swift` - Secondary button style (already existed in LargeButton.swift)
+
+**Files Modified:**
+- `OnboardingViewModel.swift` - Added languageSelection step, selectedLanguage property, userSurname, userEmail
+- `OnboardingContainerView.swift` - Wired up language screen, removed progress indicator
+- `ProfileSetupView.swift` - Added surname/email fields, contact picker, validation
+- `WhyNotificationsView.swift` - Centered greeting text, added permission request
+- `WhyHealthDataView.swift` - Added permission request with proper HealthKit types
+- `CareCircleIntroView.swift` - Opens list view modal, better flow
+- `WelcomeView.swift` - Checks for AppLogo asset
+- `Constants.swift` - Added userSurnameKey, userEmailKey
+
+**Files Deleted:**
+- `PermissionsView.swift` - Redundant after splitting permissions into two direct-request screens
+- Duplicate `LargeOutlineButton.swift` - Was already part of LargeButton.swift
+
+### Current Onboarding Flow (9 Screens)
+
+0. **Language Selection** ✅ - English or Spanish
+1. **Welcome** ✅ - "Living alone doesn't mean having to be alone"
+2. **How It Works** ✅ - Explain monitoring, Care Circle, alerts
+3. **Privacy Matters** ✅ - Data stays on device, user control
+4. **Profile Setup** ✅ - Name, surname, phone, email + contact picker
+5. **Why Notifications** ✅ - Explains + requests iOS notification permission
+6. **Why Health Data** ✅ - Explains + requests HealthKit permission  
+7. **Care Circle Intro → List** ✅ - Manage members with contacts integration
+8. **Customize Monitoring** 🚧 - Placeholder "Coming Soon"
+9. **Complete** ❌ - Not yet built
+
+### Design Decisions This Session
+
+**On Language Support:**
+- Start with English + Spanish (covers ~91% of Americans)
+- Spanish critical for San Antonio market (64% Hispanic/Latino)
+- Chinese 3rd most spoken (~3.5M speakers) but lower priority for v1.0
+- Full localization effort comes after v1.0 launch
+
+**On Contacts Integration:**
+- "Choose from Contacts" is PRIMARY action (blue button)
+- "Add Manually" is SECONDARY (outline button)
+- Contact picker auto-fills everything, sets sensible defaults
+- Default relationship: "Friend" (can edit after)
+- First member auto-becomes primary contact
+
+**On Care Circle Flow:**
+- Users STAY in list after adding member (no bounce back)
+- Can add multiple members in one session
+- Tap member card to edit relationship/details
+- "Continue" button when ready to proceed
+- "I'll Do This Later" if no members added
+
+**On Progress Indicators:**
+- Removed progress dots - too intimidating to see "9 screens left"
+- Focus on current screen, not total journey
+- Seniors prefer taking it one step at a time
+- May add "Hang in there, we're almost done" near end
+
+### Known Issues & Pending Work
+
+**Immediate Fixes Needed:**
+- ✅ ~~HealthKit permission dialog not appearing~~ - FIXED
+- ✅ ~~Can't edit Care Circle member relationship~~ - FIXED with EditCareCircleMemberView
+- Info.plist entries needed:
+  - NSContactsUsageDescription ✅
+  - NSHealthShareUsageDescription ✅
+  - NSHealthUpdateUsageDescription ✅
+
+**Remaining Onboarding Screens:**
+- Screen 8: Customize Monitoring (build or skip?)
+- Screen 9: Completion screen
+
+**Firebase Integration:**
+- Currently using UserDefaults for all data
+- Need to migrate to Firebase:
+  - User profile (name, surname, phone, email, language)
+  - Care Circle members
+  - Preferences and settings
+
+**Main App Screens (Post-Onboarding):**
+- Home tab: Status + "I'm Fine" / "Pause Monitoring" / "Test Alert" buttons
+- Medications tab
+- Appointments tab
+- Care Circle tab
+- Settings tab
+
+**Alert Context System (Future):**
+- When user sends alert, provide context:
+  - "I've Fallen"
+  - "Chest Pain / Heart Problem"
+  - "Can't Get Up"
+  - "Feeling Dizzy/Weak"
+  - "Low Blood Sugar"
+  - "I'm Lost/Disoriented"
+  - "Need Help (General)"
+  - "Emergency - Call 911"
+- Decide: Manual alert screen vs automatic + manual hybrid
+
+### Development Philosophy Reinforced
+
+**Quality Over Speed:**
+- Willing to extend timeline to 2027 for proper implementation
+- "We're in no hurry" applies to development too
+- Pack all features into v1.0 rather than phased releases
+- Both WellnessCheck + WellnessWatch launch together
+
+**Senior-First Design:**
+- Large text (20pt+ body, 22pt+ buttons)
+- Big touch targets (60x60pt minimum)
+- Clear, conversational language (not clinical jargon)
+- "I Like That" vs "Acknowledge" - speak human
+- Contact picker reduces typing burden
+
+**Honest Messaging:**
+- No marketing fluff - tell seniors what's happening
+- "We're looking for changes in YOUR patterns" (not absolute values)
+- Acknowledge concerns: "Are you okay?" not "Health monitoring active"
+- Transparency builds trust
+
+### Session Statistics
+
+**Files Added:** 8 new Swift files
+**Files Modified:** 9 existing files  
+**Files Deleted:** 2 redundant files
+**Lines of Code:** ~2,000+ new lines
+**Permissions Added:** 3 Info.plist entries
+**Features Completed:** Language selection, full Care Circle CRUD, contacts integration
+**Screens Completed:** 7 of 9 onboarding screens functional
+
+**Current Version:** v0.2.0 (ready for v0.3.0 bump after onboarding complete)
+**Next Session Focus:** Complete onboarding (screens 8-9), then main app
+
+---
+
+**Document Updated:** January 3, 2026, 9:57 PM
 
 ---
 
