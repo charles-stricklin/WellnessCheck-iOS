@@ -91,7 +91,7 @@ The invitation flow ensures explicit consent from the solo dweller:
 - **Architecture**: MVVM (Model-View-ViewModel)
 - **Minimum iOS Version**: iOS 16.0+
 - **Repository Location**: `~/Documents/Development/iOS/My iOS Projects/WellnessCheck/`
-- **Xcode Project Location**: `~/Documents/Development/iOS/My iOS Projects/WellnessCheck/Code/WellnessCheck/`
+- **Xcode Project Location**: `~/Documents/Development/iOS/MyiOSProjects/WellnessCheck/Code/WellnessCheck/`
 
 ### Apple Frameworks in Use
 - **HealthKit**: Fall detection, activity monitoring, glucose data
