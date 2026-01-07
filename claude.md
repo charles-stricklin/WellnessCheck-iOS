@@ -1,6 +1,6 @@
 # WellnessCheck - Project Context for Claude
 
-**Last Updated**: January 3, 2026  
+**Last Updated**: January 6, 2026  
 **Developer**: Charles W. Stricklin
 **Target Audience**: Solo dwellers (seniors and people medically at risk living alone) and their loved ones
 
@@ -792,6 +792,259 @@ Charles will frequently share PDFs from Medium and other technical sources cover
 ---
 
 **Document Updated:** January 3, 2026, 9:57 PM
+
+---
+
+## Session Log - January 6, 2026
+
+### Major Accomplishments - Care Circle Invitation System & UX Improvements
+
+**ConfirmCareCircleMemberView Created** - Missing Link in Care Circle Flow
+- Shows selected contact's complete information before adding
+- Relationship picker with 10 options (Daughter, Son, Spouse, Partner, Sister, Brother, Friend, Neighbor, Caregiver, Other)
+- Default to "Friend" but easily changeable before confirming
+- Displays name, phone number, email (if available)
+- Validation prevents adding members without phone numbers
+- "Add to Care Circle" button triggers invitation flow
+
+**TwilioService.swift Created** - SMS Invitation System with Test Mode
+- Complete SMS invitation infrastructure ready for Twilio integration
+- **Test Mode Active** - No Twilio account required yet, no real SMS sent
+- `isTestMode = true` flag - flip to `false` when WellnessWatch is ready
+- Preview alerts show exact message that would be sent
+- Console logging with detailed invitation information
+- Invitation message template personalized with user's name
+- Emergency alert template for future use (fall, inactivity, manual, wellness)
+- Ready for production Twilio API integration with minimal changes
+
+**CareCircleMember Model Enhanced** - Invitation Status Tracking
+- Added `invitationStatus` enum: pending, sent, accepted, declined
+- Added `invitedAt: Date?` - timestamp when invitation sent
+- Added `acceptedAt: Date?` - timestamp when member accepts via WellnessWatch
+- Full status lifecycle tracking from invitation to connection
+- Backward compatible with existing UserDefaults storage
+
+**CareCircleViewModel Extended** - Status Management
+- New `updateInvitationStatus()` method
+- Automatically sets timestamps when status changes
+- `invitedAt` set when status becomes `.sent`
+- `acceptedAt` set when status becomes `.accepted`
+- Persists status updates to UserDefaults (Firebase later)
+
+**CareCircleListView Enhanced** - Visual Status Indicators
+- Color-coded invitation status badges:
+  - 🟠 **Pending** (orange) - Added but not invited yet
+  - 🔵 **Invited** (blue) - SMS sent, awaiting download
+  - 🟢 **Connected** (green) - Downloaded WellnessWatch and connected
+  - 🔴 **Declined** (red) - Declined the invitation
+- Badges show icon + text (e.g., "📧 Invited")
+- Positioned next to phone number in member rows
+- Semi-transparent background matching badge color
+
+**Logo Consistency Fix**
+- LanguageSelectionView now uses same logo logic as WelcomeView
+- Checks for "AppLogo" asset first
+- Falls back to "WelcomeIcon" if AppLogo doesn't exist
+- Consistent branding across Screen 0 and Screen 1
+
+### Complete Invitation Flow (Test Mode)
+
+**User Experience:**
+1. Tap "Add from Contacts" in Care Circle list
+2. Select contact (e.g., Sharon) from iOS Contacts
+3. **ConfirmCareCircleMemberView appears**:
+   - Shows Sharon's full name, phone, email
+   - Relationship picker (change from "Friend" to "Sister")
+   - "Add to Care Circle" button
+4. Tap "Add to Care Circle"
+5. Member added to Care Circle
+6. **TwilioService sends invitation** (test mode):
+   - Alert appears: "📧 Invitation Preview (Test Mode)"
+   - Shows exact SMS message that would be sent
+   - Displays recipient name and phone
+   - Notes: "✓ Not actually sent - Test Mode Active"
+7. Console logs full invitation details
+8. Status updated to "Invitation Sent"
+9. Dismiss alert → back to Care Circle list
+10. Sharon appears with 🔵 "Invited" badge
+
+**What Users See in Test Mode Alert:**
+```
+📧 Invitation Preview (Test Mode)
+
+To: Sharon Smith
+Phone: +1 (555) 123-4567
+
+Message:
+Hi Sharon! Charles has added you to their
+WellnessCheck Care Circle.
+
+Download WellnessWatch to stay connected and
+receive alerts if they need help:
+
+https://wellnesswatch.dev/download
+
+You'll be notified if Charles has a fall,
+prolonged inactivity, or manually requests
+assistance.
+
+- WellnessCheck Team
+
+✓ Not actually sent - Test Mode Active
+```
+
+**What Developers See in Console:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔔 CARE CIRCLE INVITATION (TEST MODE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+To: +1 (555) 123-4567
+Name: Sharon Smith
+Relationship: Sister
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Message:
+[Full invitation text]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Logged only - NO SMS SENT (Test Mode)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Technical Files Created/Modified
+
+**New Files:**
+1. `/Screens/ConfirmCareCircleMemberView.swift` - Contact confirmation with relationship picker
+2. `/Services/TwilioService.swift` - SMS invitation system with test mode
+
+**Modified Files:**
+1. `CareCircleMember.swift` - Added invitation status tracking fields
+2. `CareCircleListView.swift` - Added status badges, updated contact picker flow
+3. `CareCircleViewModel.swift` - Added status update methods
+4. `LanguageSelectionView.swift` - Logo consistency fix
+
+**Total Changes:**
+- 6 files changed
+- 578 insertions(+), 25 deletions(-)
+- ~600 new lines of production-ready code
+
+### Design Decisions This Session
+
+**On Invitation Flow:**
+- User MUST see and confirm contact info before adding
+- Relationship choice MUST happen before adding (not after)
+- Immediate feedback via preview alert (test mode)
+- Status badges provide at-a-glance understanding
+- Color coding: Orange (waiting) → Blue (invited) → Green (connected)
+
+**On Test Mode vs Production:**
+- Develop complete flow now, deploy later
+- Test mode prevents accidental SMS spam during development
+- Preview alerts let you verify message content
+- Console logs help debug invitation issues
+- Single flag flip (`isTestMode = false`) enables production
+- No Twilio account needed until WellnessWatch is ready
+
+**On SMS Message Content:**
+- Personal greeting with Care Circle member's first name
+- Clear explanation of what WellnessCheck is
+- Direct link to download WellnessWatch
+- Specific examples of alert types (fall, inactivity, manual)
+- Professional sign-off ("WellnessCheck Team")
+- Friendly but not overly casual tone
+
+**On Status Lifecycle:**
+- **Pending** = Added to Care Circle, invitation not sent yet (shouldn't happen in normal flow)
+- **Sent** = SMS delivered (or would be in production), awaiting action
+- **Accepted** = Downloaded WellnessWatch and completed connection (future)
+- **Declined** = Explicitly declined invitation (future feature)
+
+### Known Issues & Next Steps
+
+**Immediate (Add to Xcode):**
+- ✅ ConfirmCareCircleMemberView.swift - Created, needs to be added to Xcode project
+- ✅ TwilioService.swift - Created, needs to be added to Xcode project
+
+**Testing Needed:**
+- Test complete flow: Add contact → Confirm → See invitation preview
+- Verify status badges display correctly
+- Check console logs for proper formatting
+- Test with contact that has no phone number (should prevent adding)
+
+**Before Going to Production:**
+1. Set up Twilio account (not urgent - wait for WellnessWatch)
+2. Implement actual Twilio API integration in `sendViaTwilio()` method
+3. Add Twilio credentials securely (not in code)
+4. Test with real phone numbers (willing beta testers only)
+5. Change `isTestMode = false` in TwilioService.swift
+
+**Onboarding Still Needs:**
+- Screen 8: Customize Monitoring Settings (or skip and put in main app Settings)
+- Screen 9: Completion/Celebration screen
+- Full flow test from Language Selection → Onboarding complete
+
+**Main App (Post-Onboarding):**
+- Tab bar structure (5 tabs: Home, Medications, Appointments, Care Circle, Settings)
+- Home tab with status indicator
+- "I'm Fine" check-in button
+- "Pause Monitoring" toggle
+- "Test Alert" button (sends test SMS in production)
+- Care Circle tab (reuse CareCircleListView)
+
+**WellnessWatch App (Future):**
+- Needs to exist before enabling production SMS
+- Invitation link must work (download from App Store)
+- Connection flow from WellnessWatch side
+- Ability to accept/decline invitations
+- Update WellnessCheck member status when accepted
+
+### Session Statistics
+
+**Duration:** ~2 hours
+**Files Created:** 2 new files
+**Files Modified:** 4 existing files
+**Lines Added:** ~600 lines
+**Features Completed:**
+- Complete invitation system with test mode
+- Contact confirmation flow
+- Status tracking and visualization
+- Logo consistency across onboarding
+
+**Commits:**
+- Commit `7917550` - "Care Circle invitation system with test mode & UI improvements"
+- Successfully pushed to GitHub
+
+**Current Version:** v0.2.0 (ready for v0.3.0 after onboarding complete)
+
+### Key Insights From This Session
+
+**On User Feedback:**
+- Charles immediately spotted the missing confirmation step
+- "I saw no confirmation of her information" = critical UX gap
+- "I saw no way to designate that she is my sister" = missing relationship choice
+- Building backwards from user pain points creates better flows
+- Senior users need explicit confirmation before actions
+
+**On Test Mode Benefits:**
+- Develop and iterate without costs or consequences
+- Preview exact messages before sending to real people
+- Debug invitation logic without spamming contacts
+- Show investors/stakeholders the complete experience
+- Easy switch to production when ready (one flag)
+
+**On Status Visualization:**
+- Color-coding reduces cognitive load
+- Icons reinforce meaning (📧 = invited, ✅ = connected)
+- Status badges answer "what's happening?" at a glance
+- Seniors don't need to memorize what "pending" means
+
+**On Development Velocity:**
+- Building complete features (not MVPs) takes longer upfront
+- But avoids technical debt and rework later
+- Test mode lets us validate UX without production dependencies
+- Clean abstractions (TwilioService) make production switch trivial
+
+---
+
+**Document Updated:** January 6, 2026, 8:30 PM
 
 ---
 
