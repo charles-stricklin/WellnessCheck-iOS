@@ -18,6 +18,8 @@ struct CareCircleListView: View {
     @State private var showAddMember = false
     @State private var showContactPicker = false
     @State private var selectedMemberToEdit: CareCircleMember? = nil
+    @State private var showConfirmContact = false
+    @State private var selectedContactData: (firstName: String, lastName: String, phone: String, email: String?)? = nil
     
     // MARK: - Body
     
@@ -150,17 +152,25 @@ struct CareCircleListView: View {
             }
             .sheet(isPresented: $showContactPicker) {
                 ContactPicker(isPresented: $showContactPicker) { contact in
-                    // Create a new member from the selected contact
-                    let member = CareCircleMember(
+                    // Store the selected contact data and show confirmation view
+                    selectedContactData = (
                         firstName: contact.firstName,
                         lastName: contact.lastName,
-                        phoneNumber: contact.primaryPhoneNumber ?? "",
-                        email: contact.primaryEmailAddress,
-                        relationship: "Friend", // Default - user can edit later if needed
-                        isPrimary: viewModel.members.isEmpty, // First one is primary
-                        notificationPreference: .sms
+                        phone: contact.primaryPhoneNumber ?? "",
+                        email: contact.primaryEmailAddress
                     )
-                    viewModel.addMember(member)
+                    showConfirmContact = true
+                }
+            }
+            .sheet(isPresented: $showConfirmContact) {
+                if let contactData = selectedContactData {
+                    ConfirmCareCircleMemberView(
+                        viewModel: viewModel,
+                        firstName: contactData.firstName,
+                        lastName: contactData.lastName,
+                        phoneNumber: contactData.phone,
+                        email: contactData.email
+                    )
                 }
             }
         }
@@ -189,7 +199,7 @@ struct CareCircleMemberRow: View {
                 HStack(spacing: 8) {
                     Text(member.fullName)
                         .font(.system(size: 18, weight: .semibold))
-                    
+
                     if member.isPrimary {
                         Text("PRIMARY")
                             .font(.system(size: 10, weight: .bold))
@@ -200,14 +210,19 @@ struct CareCircleMemberRow: View {
                             .cornerRadius(4)
                     }
                 }
-                
+
                 Text(member.relationship)
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
-                
-                Text(member.phoneNumber)
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
+
+                HStack(spacing: 8) {
+                    Text(member.phoneNumber)
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+
+                    // Invitation status badge
+                    invitationStatusBadge(for: member)
+                }
             }
             
             Spacer()
@@ -218,6 +233,63 @@ struct CareCircleMemberRow: View {
         .padding()
         .background(Color.white)
         .cornerRadius(12)
+    }
+
+    @ViewBuilder
+    private func invitationStatusBadge(for member: CareCircleMember) -> some View {
+        switch member.invitationStatus {
+        case .pending:
+            HStack(spacing: 4) {
+                Image(systemName: "clock.fill")
+                    .font(.system(size: 10))
+                Text("Pending")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundColor(.orange)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.orange.opacity(0.1))
+            .cornerRadius(4)
+
+        case .sent:
+            HStack(spacing: 4) {
+                Image(systemName: "envelope.fill")
+                    .font(.system(size: 10))
+                Text("Invited")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundColor(.blue)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(4)
+
+        case .accepted:
+            HStack(spacing: 4) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 10))
+                Text("Connected")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundColor(.green)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.green.opacity(0.1))
+            .cornerRadius(4)
+
+        case .declined:
+            HStack(spacing: 4) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 10))
+                Text("Declined")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundColor(.red)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.red.opacity(0.1))
+            .cornerRadius(4)
+        }
     }
 }
 

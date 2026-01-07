@@ -25,18 +25,18 @@ struct LanguageSelectionView: View {
             VStack(spacing: 40) {
                 Spacer()
                 
-                // App logo (assuming you have a logo image asset named "AppLogo")
-                // If you don't have one yet, this will fall back to the icon
+                // WellnessCheck app icon/logo
                 if let _ = UIImage(named: "AppLogo") {
                     Image("AppLogo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 120, height: 120)
                 } else {
-                    // Fallback to SF Symbol if no logo asset exists
-                    Image(systemName: "heart.text.square.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                    // Fallback to WelcomeIcon if no AppLogo
+                    Image("WelcomeIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
                 }
                 
                 // App name

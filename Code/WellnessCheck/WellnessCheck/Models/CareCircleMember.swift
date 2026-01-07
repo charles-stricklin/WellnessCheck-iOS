@@ -17,11 +17,21 @@ struct CareCircleMember: Identifiable, Codable {
     var relationship: String // "Daughter", "Son", "Neighbor", "Friend", etc.
     var isPrimary: Bool // First person to be notified
     var notificationPreference: NotificationPreference
-    
+    var invitationStatus: InvitationStatus
+    var invitedAt: Date?
+    var acceptedAt: Date?
+
     enum NotificationPreference: String, Codable, CaseIterable {
         case sms = "Text Message"
         case call = "Phone Call"
         case both = "Text & Call"
+    }
+
+    enum InvitationStatus: String, Codable {
+        case pending = "Pending"           // Added but invitation not sent yet
+        case sent = "Invitation Sent"      // SMS sent, awaiting download
+        case accepted = "Accepted"         // Downloaded WellnessWatch and connected
+        case declined = "Declined"         // Declined the invitation
     }
     
     init(
@@ -32,7 +42,10 @@ struct CareCircleMember: Identifiable, Codable {
         email: String? = nil,
         relationship: String,
         isPrimary: Bool = false,
-        notificationPreference: NotificationPreference = .sms
+        notificationPreference: NotificationPreference = .sms,
+        invitationStatus: InvitationStatus = .pending,
+        invitedAt: Date? = nil,
+        acceptedAt: Date? = nil
     ) {
         self.id = id
         self.firstName = firstName
@@ -42,6 +55,9 @@ struct CareCircleMember: Identifiable, Codable {
         self.relationship = relationship
         self.isPrimary = isPrimary
         self.notificationPreference = notificationPreference
+        self.invitationStatus = invitationStatus
+        self.invitedAt = invitedAt
+        self.acceptedAt = acceptedAt
     }
     
     var fullName: String {

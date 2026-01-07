@@ -50,15 +50,33 @@ class CareCircleViewModel: ObservableObject {
         for index in members.indices {
             members[index].isPrimary = false
         }
-        
+
         // Set this one as primary
         if let index = members.firstIndex(where: { $0.id == member.id }) {
             members[index].isPrimary = true
         }
-        
+
         saveMembers()
     }
-    
+
+    func updateInvitationStatus(_ member: CareCircleMember, status: CareCircleMember.InvitationStatus) {
+        if let index = members.firstIndex(where: { $0.id == member.id }) {
+            members[index].invitationStatus = status
+
+            // Set invitedAt timestamp when status becomes 'sent'
+            if status == .sent && members[index].invitedAt == nil {
+                members[index].invitedAt = Date()
+            }
+
+            // Set acceptedAt timestamp when status becomes 'accepted'
+            if status == .accepted && members[index].acceptedAt == nil {
+                members[index].acceptedAt = Date()
+            }
+
+            saveMembers()
+        }
+    }
+
     var hasPrimaryContact: Bool {
         members.contains { $0.isPrimary }
     }
