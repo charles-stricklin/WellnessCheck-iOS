@@ -1165,3 +1165,160 @@ Message:
 ---
 
 **Document Updated:** December 31, 2024, 1:30 AM
+
+---
+
+## Session Log - January 8, 2026
+
+### Major Accomplishments - Website & AI FAQ Bot
+
+**Complete Marketing Website Infrastructure Built**
+
+Tonight we built the entire public-facing web presence for WellnessCheck on wellnesscheck.dev:
+
+**Coming Soon Page (front-page.php)**
+- Two-tab signup system: "I'm Interested" and "I Want to Help Build This"
+- Interested form: Name, Email, Role (Solo dweller/Care Circle/Caregiver/Curious), How Heard
+- Contributor form: Name, Email, GitHub (optional), Skills checkboxes, Message
+- Skills options: SwiftUI, Firebase, Android/Kotlin, UI/UX Design, QA/Testing, Marketing, Spanish Translation, Technical Writing
+- Link to FAQ page at bottom
+- All forms submit to Google Sheets via Apps Script
+
+**Google Sheets Integration**
+- Spreadsheet ID: `1hmKR1cz61gS4-QJCzLKqiyqBDDdR8p0Qm5raukmiMTY`
+- Three tabs: Interested, Contributors, FAQ
+- **Interested columns**: Timestamp, Name, Email, Role, How Heard, Status
+- **Contributors columns**: Timestamp, Name, Email, GitHub, Skills, Message, Status
+- **FAQ columns**: Timestamp, First Name, Question, AI Response, Status
+
+**Google Apps Script - Form Handler + AI FAQ Bot**
+- Handles all form submissions (interested, contributor, faq, aiFaq)
+- Email confirmations to users (via Gmail)
+- Admin notifications to mailinglist@wellnesscheck.dev
+- Unsubscribe functionality with status update
+- **AI FAQ Bot powered by Claude API (Haiku model)**
+- Questions Claude can't confidently answer flagged as "NEEDS_HUMAN_REVIEW"
+- Flagged questions saved to Google Sheet for human review
+
+**FAQ System Using WordPress Custom Post Type**
+- Using theme's built-in FAQ custom post type (not custom page template)
+- FAQs managed via WordPress Admin → FAQs → Add New
+- Title = Question, Content = Answer
+- archive-faq.php template displays FAQs in accordion
+- 7 starter FAQs created via WP-CLI
+
+**AI Chat Widget (Claude-Powered)**
+- **Floating chat widget** on all pages (bottom right corner)
+- **Embedded chat** on /faq/ page
+- Real-time responses from Claude Haiku
+- Typing indicator while waiting
+- Fallback: if API fails, question saved for human review
+- CORS issues fixed for Google Apps Script compatibility
+
+**Theme Customizer Fix**
+- Header Colors settings weren't affecting navigation
+- Added `!important` to customizer CSS output
+- Navigation colors now controllable via Appearance → Customize → Header Colors
+
+### Technical Infrastructure
+
+**SSH Access**
+- New RSA key pair generated: `~/.ssh/iMac_rsa`
+- Web host: charlesstricklin.com
+- Username: charle24
+- WordPress path: `~/domains/wellnesscheck.dev/public_html/cms/`
+- Theme path: `.../wp-content/themes/stricklin-development/`
+
+**Key URLs**
+- Site: https://wellnesscheck.dev
+- FAQ: https://wellnesscheck.dev/faq/
+- Apps Script: `https://script.google.com/macros/s/AKfycbxVztfuDDNvUSc7ooCTQiYx4JETHb0uMbpFK9ub1ilOhUKPHqv89UDtcQNkVyS3YwA/exec`
+
+**Email Configuration**
+- FROM_NAME: WellnessCheck
+- ADMIN_EMAIL: mailinglist@wellnesscheck.dev
+- Confirmation emails sent via GmailApp (from default Gmail account)
+- Calendar link for contributors: https://calendar.app.google/2JYVsCdNnXHurFTRA
+
+**Anthropic API**
+- Using Claude 3 Haiku for FAQ bot (fast, cheap)
+- API key stored in Google Apps Script Properties (secure)
+- Cost estimate: fractions of a penny per question
+
+### Files Created/Modified
+
+**WordPress Theme Files:**
+- `front-page.php` - Coming Soon page with signup forms
+- `archive-faq.php` - FAQ archive with AI chat
+- `footer.php` - Added floating chat widget
+- `inc/customizer.php` - Fixed header color CSS output
+
+**Google Apps Script:**
+- Complete rewrite with AI FAQ integration
+- ~300 lines of production code
+- Stored at: `/Users/charles/Downloads/faq-bot-script.js`
+
+### AI FAQ Knowledge Base
+
+The FAQ bot's knowledge is stored in the `FAQ_KNOWLEDGE` variable in Apps Script. Current knowledge includes:
+
+- App description and mission
+- Two-app model (WellnessCheck + WellnessWatch)
+- Platform roadmap: iPhone first → iPad (WellnessWatch) → Android
+- Target users (seniors, solo dwellers, caregivers)
+- Key features (vague - no competitive details)
+- Privacy stance (no location tracking, no data selling)
+- Response guidelines (concise, warm, professional)
+
+**To update knowledge:** Edit `FAQ_KNOWLEDGE` in Apps Script → Save → Deploy → Manage deployments → Edit → New version → Deploy
+
+### Design Decisions
+
+**On FAQ System:**
+- Used theme's built-in FAQ custom post type instead of custom page template
+- More maintainable - add/edit FAQs via WordPress admin
+- Archive page automatically updates
+
+**On AI Chat:**
+- Claude Haiku chosen for speed and cost-efficiency
+- No name required for chat (reduces friction)
+- Logs default to "Website Visitor" for privacy
+- Questions Claude can't answer get flagged for human review
+
+**On Under-18 Users:**
+- WellnessCheck is for adults (18+)
+- Added to Terms of Service consideration
+- FAQ bot is low-risk (just answering product questions)
+- Full app should require age confirmation at signup
+
+### Session Statistics
+
+**Duration:** ~5 hours
+**Files Created:** 4+ new files
+**Files Modified:** 3+ existing files
+**Features Completed:**
+- Complete Coming Soon page with forms
+- Google Sheets integration with 3 tabs
+- Email confirmation system
+- FAQ system with 7 starter questions
+- AI-powered FAQ chat bot
+- Floating chat widget site-wide
+- Customizer color fix
+
+### Synopsis - What We Built Tonight
+
+We transformed wellnesscheck.dev from a placeholder into a fully functional marketing site with:
+
+1. **Lead capture** - Two signup forms feeding into Google Sheets
+2. **Email automation** - Confirmation emails and admin notifications
+3. **FAQ system** - Managed via WordPress, displayed in accordion
+4. **AI support** - Claude-powered chat answers visitor questions 24/7
+5. **Smart escalation** - Questions the AI can't answer get saved for human review
+
+The AI FAQ bot is particularly notable - it's a production-ready customer support system that cost $5 to set up and will cost pennies to operate. It knows about WellnessCheck, can answer common questions, and automatically escalates anything it's unsure about.
+
+All of this runs on free/cheap infrastructure: WordPress theme, Google Sheets, Google Apps Script, and Anthropic API.
+
+---
+
+**Document Updated:** January 8, 2026, 11:45 PM
