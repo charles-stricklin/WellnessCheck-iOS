@@ -1,141 +1,142 @@
-# WellnessCheck Platform
+# WellnessCheck
 
-**Living alone shouldn't mean being alone in an emergency.**
+**Living alone doesn't mean having to be alone.**
 
-A comprehensive safety and wellness monitoring platform for solo dwellers and their Care Circle members.
-
----
-
-## 📱 About
-
-WellnessCheck Platform consists of two iOS apps working together:
-
-- **WellnessCheck** - For solo dwellers (seniors and at-risk individuals living alone)
-- **WellnessWatch** - For Care Circle members (family, friends, caregivers)
-
-**Current Version:** v0.1.0 (Early Development)  
-**Status:** Foundation stage - onboarding flow built, untested  
-**Platform:** iOS 16.0+  
-**Developer:** Charles Stricklin, Stricklin Development, LLC  
-**Domains:** wellnesscheck.dev | wellnesswatch.dev
+A safety monitoring iOS app for solo dwellers and their Care Circle.
 
 ---
 
-## 🎯 Mission
+## About
 
-Create a reliable, privacy-respecting safety net for people living independently while giving their loved ones peace of mind.
+WellnessCheck monitors for falls, inactivity, and wellness concerns, automatically alerting designated Care Circle members when something's wrong.
 
----
-
-## ✨ Planned Features (v1.0)
-
-### WellnessCheck (Solo Dweller App)
-- ⏳ Automatic fall detection
-- ⏳ Inactivity monitoring  
-- ⏳ Emergency alert slider
-- ⏳ Glucose monitoring (Libre 3 integration)
-- ⏳ Medication tracking
-- ⏳ Appointment management
-- ⏳ Physician contacts
-- ⏳ Care Circle management
-- ⏳ Wellness concern detection
-- ⏳ Do Not Disturb scheduling
-
-### WellnessWatch (Care Circle App)
-- ⏳ Multi-person dashboard
-- ⏳ Real-time alerts
-- ⏳ Trend data and history
-- ⏳ Quick-glance status updates
+**Current Version:** v0.2.0
+**Platform:** iOS 16.0+ / Swift 6.x / SwiftUI
+**Architecture:** MVVM
+**License:** AGPL-3.0
+**Developer:** Charles Stricklin, Stricklin Development, LLC
 
 ---
 
-## 📊 Current Status
+## v1.0 Features
 
-### Completed (v0.1.0)
-- ✅ Git repository initialized
-- ✅ Project structure created
-- ✅ Onboarding flow code written (5 screens)
-- ✅ User model and settings
-- ✅ MVVM architecture established
-- ✅ Documentation (claude.md)
+- Fall detection
+- Step count monitoring
+- Phone movement (proof-of-life)
+- Flights of stairs climbed
+- Battery level (negative space context)
+- Home awareness (user-defined)
+- Learned pattern deviation
+- Negative space detection
+- Wellness concern detection (pattern clusters)
+- Care Circle management with SMS invitations
+- Do Not Disturb scheduling
+
+**Future:** WellnessWatch (Care Circle companion app), Apple Watch, geofencing, glucose monitoring, medication tracking
+
+---
+
+## Current Status
+
+### Completed
+- Onboarding flow (7 screens): Language selection, Welcome, How It Works, Privacy, Profile, Permissions (split), Care Circle management
+- Care Circle CRUD with iOS Contacts integration
+- SMS invitation system (test mode)
+- Brand identity and senior-friendly UI (60pt touch targets, 7:1 contrast)
 
 ### In Progress
-- 🔄 Xcode project configuration
-- 🔄 Testing onboarding flow
+- Screen 8: Customize Monitoring (or skip to Settings)
+- Screen 9: Completion
+- Main app tab structure
 
-### Next Steps
-- ⏳ Add files to Xcode project
-- ⏳ Configure HealthKit capability
-- ⏳ Implement HealthKit service
-- ⏳ Set up Firebase backend
-- ⏳ Build notification system
-
----
-
-## 🏗️ Tech Stack
-
-- **Language:** Swift 6.x
-- **UI Framework:** SwiftUI
-- **Architecture:** MVVM
-- **Backend:** Firebase (Auth, Firestore, Functions, Messaging)
-- **SMS:** Twilio
-- **Health Data:** HealthKit
-- **Minimum iOS:** 16.0+
+### Next
+- Firebase integration
+- Background monitoring service
+- Home tab with status indicator
 
 ---
 
-## 📁 Repository Structure
+## Developer Setup
+
+### 1. Clone and Open
+```bash
+git clone https://github.com/charles-stricklin/WellnessCheck.git
+cd WellnessCheck/Code/WellnessCheck
+open WellnessCheck.xcodeproj
+```
+
+### 2. Add HealthKit Capability
+1. Select the WellnessCheck target
+2. Go to **Signing & Capabilities**
+3. Click **+ Capability** → Add **HealthKit**
+4. Check "Background Delivery" for continuous monitoring
+
+### 3. Add Contacts Capability
+1. Same process → Add **Contacts**
+
+### 4. Configure Info.plist
+Add these privacy descriptions (via Info tab or directly in Info.plist):
+
+| Key | Value |
+|-----|-------|
+| NSHealthShareUsageDescription | WellnessCheck monitors your activity and fall detection to keep you safe and alert your Care Circle in emergencies. |
+| NSHealthUpdateUsageDescription | WellnessCheck records wellness check-ins to track your safety status. |
+| NSContactsUsageDescription | WellnessCheck uses your contacts to easily add Care Circle members. |
+
+### 5. Build and Run
+- Select iOS 16.0+ simulator or device
+- Cmd+R
+
+### Reset Onboarding (Testing)
+```swift
+UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+```
+
+---
+
+## Project Structure
 
 ```
 WellnessCheck/
-├── README.md
-├── CHANGELOG.md
-├── LICENSE
-├── claude.md                    # Project context for AI assistance
-├── Code/
-│   └── WellnessCheck/           # Xcode project
-│       └── WellnessCheck/       # App code
-│           ├── Models/
-│           ├── ViewModels/
-│           ├── Screens/
-│           ├── Services/
-│           ├── Shared/
-│           └── Utilities/
-└── docs/
-    └── [Project documentation]
+├── Code/WellnessCheck/          # Xcode project
+│   └── WellnessCheck/
+│       ├── Models/              # Data models
+│       ├── ViewModels/          # MVVM view models
+│       ├── Screens/             # SwiftUI views
+│       ├── Services/            # HealthKit, Twilio, Firebase
+│       ├── Shared/              # Reusable components
+│       └── Utilities/           # Constants, extensions
+├── CLAUDE.md                    # Project context for AI assistance
+├── SESSION_LOG.md               # Development history
+├── TODO.md                      # Task tracking
+└── LICENSE                      # AGPL-3.0
 ```
 
 ---
 
-## 🚀 Development Roadmap
+## Design Principles
 
-**v0.1.0** - Foundation (Current)  
-**v0.2.0** - Xcode integration, onboarding tested  
-**v0.3.0** - HealthKit service, fall detection  
-**v0.4.0** - Firebase backend, emergency alerts  
-**v0.5.0** - Glucose monitoring  
-**v0.6.0** - Medication tracking  
-**v0.7.0** - Appointments & physician contacts  
-**v0.8.0** - WellnessWatch app development  
-**v0.9.0** - Full integration & testing  
-**v1.0.0** - App Store launch (when ready)
+- **Touch targets:** 60x60pt minimum
+- **Typography:** 20pt body, 22pt buttons, 28pt+ headers
+- **Contrast:** 7:1 minimum
+- **Navigation:** Explicit buttons only, no swipe gestures
+- **Privacy:** Minimal data collection, clear disclaimers
 
 ---
 
-## 📝 License
+## Tech Stack
 
-MIT License - See LICENSE file for details
-
----
-
-## 👨‍💻 Developer
-
-**Charles Stricklin**  
-Stricklin Development, LLC  
-San Antonio, Texas
-
-Building technology to help seniors and at-risk individuals live independently with dignity and safety.
+- **Frontend:** SwiftUI, HealthKit, Contacts
+- **Backend:** Firebase (Auth, Firestore, Cloud Functions, Cloud Messaging)
+- **SMS:** Twilio
+- **Languages:** English, Spanish (v1.0)
 
 ---
 
-**Note:** This is a safety-critical application under active development. Quality and user safety are prioritized over speed. Target launch: When it's ready and right.
+## License
+
+GNU Affero General Public License v3.0 — See [LICENSE](LICENSE)
+
+---
+
+**Note:** This is a safety-critical application. Quality and user safety are prioritized over speed.
