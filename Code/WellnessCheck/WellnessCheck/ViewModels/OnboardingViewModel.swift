@@ -48,6 +48,12 @@ class OnboardingViewModel: ObservableObject {
     /// Whether onboarding is complete
     @Published var isOnboardingComplete: Bool = false
 
+    /// Whether home location has been set
+    @Published var hasHomeLocation: Bool = false
+
+    /// Whether home location setup was deferred
+    @Published var homeLocationDeferred: Bool = false
+
     // MARK: - Private Properties
 
     private let healthStore = HKHealthStore()
@@ -64,6 +70,7 @@ class OnboardingViewModel: ObservableObject {
         case contactSelection
         case whyNotifications
         case whyHealthData
+        case homeLocation
         case careCircleSetup
         case customizeMonitoring
         case complete
@@ -84,6 +91,8 @@ class OnboardingViewModel: ObservableObject {
                 return "Why Notifications"
             case .whyHealthData:
                 return "Why Health Data"
+            case .homeLocation:
+                return "Home Location"
             case .careCircleSetup:
                 return "Care Circle"
             case .customizeMonitoring:
@@ -104,10 +113,14 @@ class OnboardingViewModel: ObservableObject {
         userDefaults.removeObject(forKey: Constants.userSurnameKey)
         userDefaults.removeObject(forKey: Constants.userPhoneKey)
         userDefaults.removeObject(forKey: Constants.userEmailKey)
-        
+        userDefaults.removeObject(forKey: Constants.homeLocationKey)
+        userDefaults.removeObject(forKey: Constants.homeLocationDeferredKey)
+
         // Reset permission flags
         hasHealthKitPermission = false
         hasNotificationPermission = false
+        hasHomeLocation = false
+        homeLocationDeferred = false
         #endif
         
         checkExistingPermissions()
@@ -135,7 +148,7 @@ class OnboardingViewModel: ObservableObject {
     /// Checks if user can proceed from current step
     func canProceed() -> Bool {
         switch currentStep {
-        case .languageSelection, .welcome, .howItWorks, .privacy, .whyNotifications, .whyHealthData:
+        case .languageSelection, .welcome, .howItWorks, .privacy, .whyNotifications, .whyHealthData, .homeLocation:
             return true
         case .contactSelection:
             return !userName.isEmpty && !userSurname.isEmpty && !userPhone.isEmpty && isValidPhoneNumber(userPhone)

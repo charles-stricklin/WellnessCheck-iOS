@@ -96,6 +96,15 @@ struct OnboardingContainerView: View {
                             removal: .move(edge: .leading)
                         ))
 
+                    case .homeLocation:
+                        HomeLocationView(viewModel: viewModel) {
+                            viewModel.goToNextStep()
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+
                     case .careCircleSetup:
                         CareCircleIntroView(viewModel: viewModel) {
                             viewModel.goToNextStep()

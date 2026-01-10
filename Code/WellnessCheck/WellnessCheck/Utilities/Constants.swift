@@ -61,6 +61,12 @@ struct Constants {
     /// Key for user's email address
     static let userEmailKey = "userEmail"
 
+    /// Key for user's home location (stored as JSON-encoded HomeLocation)
+    static let homeLocationKey = "homeLocation"
+
+    /// Key for whether home location setup was deferred
+    static let homeLocationDeferredKey = "homeLocationDeferred"
+
     // MARK: - App Info
 
     /// App display name

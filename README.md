@@ -39,7 +39,8 @@ WellnessCheck monitors for falls, inactivity, and wellness concerns, automatical
 ## Current Status
 
 ### Completed
-- Onboarding flow (7 screens): Language selection, Welcome, How It Works, Privacy, Profile, Permissions (split), Care Circle management
+- Onboarding flow (8 screens): Language selection, Welcome, How It Works, Privacy, Profile, Permissions (split), Home Location, Care Circle management
+- Home location setup with GPS + confirmation hybrid flow
 - Care Circle CRUD with iOS Contacts integration
 - SMS invitation system (test mode)
 - Brand identity and senior-friendly UI (60pt touch targets, 7:1 contrast)
@@ -82,6 +83,7 @@ Add these privacy descriptions (via Info tab or directly in Info.plist):
 | NSHealthShareUsageDescription | WellnessCheck monitors your activity and fall detection to keep you safe and alert your Care Circle in emergencies. |
 | NSHealthUpdateUsageDescription | WellnessCheck records wellness check-ins to track your safety status. |
 | NSContactsUsageDescription | WellnessCheck uses your contacts to easily add Care Circle members. |
+| NSLocationWhenInUseUsageDescription | WellnessCheck uses your location to set your home address and detect when you're away, which helps us better interpret inactivity patterns. |
 
 ### 5. Build and Run
 - Select iOS 16.0+ simulator or device
