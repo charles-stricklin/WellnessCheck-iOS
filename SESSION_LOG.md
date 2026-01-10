@@ -2,7 +2,39 @@
 
 ---
 
-## 2026-01-10
+## 2026-01-10 (Evening Session)
+
+### What Was Done
+- Consolidated session summaries into SESSION_LOG.md (Dec 26, Jan 3, Jan 6)
+- Switched license from MIT to AGPL-3.0
+- Updated README with current status and developer setup instructions
+- Built Home Location screen (Screen 6) with hybrid GPS + confirm flow:
+  - Created LocationService.swift: CoreLocation wrapper, reverse geocoding, storage
+  - Created HomeLocationView.swift: 6-state flow (initial, fetching, confirm, not home, failed, complete)
+  - Updated OnboardingViewModel with homeLocation step and properties
+  - Updated OnboardingContainerView with HomeLocationView case
+- Added NSLocationWhenInUseUsageDescription to README setup instructions
+
+### Decisions Made
+- Session synopses go directly into SESSION_LOG.md (no separate files)
+- Home location uses hybrid flow: GPS first, defer if not home, skip if fails
+- Store only lat/long + radius (not full address) for privacy
+- "When In Use" location permission sufficient (not "Always")
+
+### Technical Stats
+- 2 new Swift files (LocationService, HomeLocationView)
+- 4 files modified
+- 802 lines added
+- Onboarding: 80% complete (8 of 10 screens)
+
+### Next Session
+- Decision: Build Customize Monitoring screen or skip to Settings tab?
+- Build Screen 9 (Completion celebration)
+- Test full onboarding flow
+
+---
+
+## 2026-01-10 (Morning Session)
 
 ### What Was Done
 - Finalized v1.0 feature scope with Claude (claude.ai)
