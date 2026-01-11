@@ -73,21 +73,24 @@ struct HowItWorksView: View {
                             colorScheme: colorScheme
                         )
                         
-                        ExplanationCard(
-                            icon: "applewatch",
-                            title: "Add an Apple Watch?",
-                            description: "Even better fall detection and around-the-clock activity monitoring give your loved ones greater peace of mind.",
-                            colorScheme: colorScheme,
-                            isOptional: true
-                        )
-                        
-                        ExplanationCard(
-                            icon: "heart.text.square",
-                            title: "Use a Glucose Monitor?",
-                            description: "Your blood sugar trends are tracked, so concerning patterns can be spotted before they become emergencies.",
-                            colorScheme: colorScheme,
-                            isOptional: true
-                        )
+                        // MARK: - Future v2 Features (commented out for v1)
+                        // Apple Watch integration
+//                        ExplanationCard(
+//                            icon: "applewatch",
+//                            title: "Add an Apple Watch?",
+//                            description: "Even better fall detection and around-the-clock activity monitoring give your loved ones greater peace of mind.",
+//                            colorScheme: colorScheme,
+//                            isOptional: true
+//                        )
+
+                        // CGM (Continuous Glucose Monitor) integration
+//                        ExplanationCard(
+//                            icon: "heart.text.square",
+//                            title: "Use a Glucose Monitor?",
+//                            description: "Your blood sugar trends are tracked, so concerning patterns can be spotted before they become emergencies.",
+//                            colorScheme: colorScheme,
+//                            isOptional: true
+//                        )
                     }
                     .padding(.horizontal, 24)
                     

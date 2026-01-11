@@ -115,20 +115,20 @@ struct OnboardingContainerView: View {
                         ))
 
                     case .customizeMonitoring:
-                        VStack(spacing: 20) {
-                            Text("Customize Monitoring")
-                                .font(.title)
-                            Text("Coming Soon")
-                                .foregroundColor(.secondary)
-                            Button("Continue") {
-                                viewModel.goToNextStep()
-                            }
-                            .buttonStyle(.borderedProminent)
+                        CustomizeMonitoringView {
+                            viewModel.goToNextStep()
                         }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
 
                     case .complete:
-                        // This case triggers the completion handler
-                        EmptyView()
+                        CompletionView()
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .trailing),
+                                removal: .move(edge: .leading)
+                            ))
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)

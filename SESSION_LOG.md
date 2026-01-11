@@ -1,5 +1,138 @@
 # WellnessCheck Session Log
 
+### 2026-01-10 (Late Night Session)
+
+**Onboarding Complete + Dashboard Built**
+
+#### What Was Done
+- Fixed Combine import errors in LocationService, CompletionViewModel, CustomizeMonitoringViewModel
+- Fixed guard fallthrough issue in `fetchCurrentLocation()`
+- Updated LocationService for iOS 26 compatibility:
+  - Uses `MKReverseGeocodingRequest` + `MKAddress` on iOS 26+
+  - Falls back to `CLGeocoder` on iOS 16-25
+- Commented out Apple Watch and CGM cards in HowItWorksView (v2 features)
+- Wired CustomizeMonitoringView into OnboardingContainerView (was placeholder)
+- Wired CompletionView into OnboardingContainerView (was EmptyView)
+- Updated screen number comments: Customize = Screen 10, Completion = Screen 11
+- Added location permission key to Info.plist (via Xcode target settings)
+- Recovered from accidentally deleted target (git restore project.pbxproj)
+- Swapped checkmark for ThumbsUp image in CompletionView
+- Built full MainDashboardView:
+  - Tab bar: Home, Activity, Care Circle, Settings
+  - Home tab: time-based greeting, green status card with learning badge
+  - Today's Activity: steps (with progress bar), floors, phone pickups
+  - Care Circle preview with member list
+  - "Send I'm OK" button with confirmation dialog (prevents accidental taps)
+  - Settings tab with Reset Onboarding button for testing
+  - Activity and Care Circle tabs are placeholders
+
+#### Decisions Made
+- Confirmation dialog > long press for "I'm OK" button (clearer for seniors)
+- Keep iOS 16 as minimum deployment target (backwards compatibility)
+- Dashboard uses mock data for now; will connect to real HealthKit/Care Circle data later
+
+#### Technical Stats
+- 5 files modified
+- 5 new/untracked files (CustomizeMonitoring View+VM, Completion View+VM, ThumbsUp asset)
+- Full onboarding flow now complete (11 screens)
+- Dashboard MVP ready
+
+#### Crisis Averted
+- Target accidentally deleted from project.pbxproj
+- Recovered via `git checkout -- project.pbxproj`
+- No code lost
+
+#### Next Session
+- Dark mode testing pass
+- TestFlight build and submission
+- Connect dashboard to real data
+
+---
+
+### 2026-01-10 (Afternoon - Remote Session from iPhone)
+
+**UI Design - Onboarding Completion**
+
+Created mockups for remaining onboarding screens:
+
+- **Screen 8: Customize Monitoring** — Four toggles: Fall Detection, Inactivity Alerts, Night Owl mode, Quiet Hours. Quiet Hours expands to show time pickers. Info note about 14-day learning period. "Continue" + "I'll customize this later" buttons.
+- **Screen 9: Completion** — Celebratory "You're All Set" with checkmark (may replace with GladToMeetYou thumbs-up image). Summary card showing Care Circle members, monitoring features enabled, home location status. Green "Get Started" button. Learning period reminder.
+- **Home Screen Concept** — Header with greeting, main "All Good" status card (green gradient), learning period badge, Today's Activity grid (steps, floors, phone pickups), Care Circle section with "No alerts sent ✓", "Send I'm OK" quick action button, tab bar (Home, Activity, Care Circle, Settings).
+
+SwiftUI files generated for Screen 8 and Screen 9.
+
+**Pricing Model Finalized**
+
+- WellnessCheck: $9.99 one-time purchase
+- WellnessWatch: Deferred — v1 uses SMS + web-based acknowledgment instead
+- Unlimited SMS add-on: $2.99 one-time (if user exceeds 10 alerts/month)
+- No subscriptions
+
+**AI Integration Decision**
+
+AI (Claude API) used sparingly to minimize costs:
+
+- Normal operation: Pure on-device math, pattern learning, no AI, no cost
+- Escalation events only: AI generates human-sounding check-in messages and contextual alerts for Care Circle
+- Estimated cost: ~$0.02-0.05 per escalation event, negligible at scale
+
+**Core Detection Philosophy**
+
+Silence detection is user-driven, not AI-driven:
+
+- User sets threshold via slider: 2-12 hours in 30-minute increments
+- Slider answers: "If I'm ever silent longer than this, something may be wrong"
+- 14-day learning period reduces false positives (knows when you're normally quiet) but doesn't change detection logic
+- Timer runs during expected waking hours, not 24/7
+
+**Escalation Flow**
+
+1. Silence threshold exceeded → app nudges user (sound + vibration)
+2. User doesn't respond in 15-30 min → alert Tier 1 Care Circle via SMS
+3. Tier 1 doesn't acknowledge ("I'm on it" button) → escalate to Tier 2
+4. Repeat through all tiers
+5. If 911 opt-in enabled and alert type qualifies → contact 911
+
+**Product Philosophy Crystallized**
+
+"11 hours is better than 4 days."
+
+WellnessCheck is NOT a medical device. It cannot detect or prevent medical emergencies. It monitors for inactivity and notifies designated contacts. The app's job is to shorten the window between "something's wrong" and "someone who can physically help finds out."
+
+User chose their threshold. App did what it said. What happens after is out of scope.
+
+**Disclaimer Language (for App Store, onboarding, ToS)**
+
+> WellnessCheck is not a medical device and cannot detect or prevent medical emergencies. It monitors for periods of inactivity and notifies your designated contacts when you don't respond. Response times depend on your settings and your Care Circle's availability. WellnessCheck helps people find out sooner—not instantly.
+
+**Location-Aware Alerts**
+
+When user is unresponsive, alert message adapts based on location:
+
+- **At home:** "Martha hasn't responded in over 8 hours. She's at home. You may want to check on her or request a welfare check."
+- **Away from home:** "Martha hasn't responded in over 8 hours and is not at home. [Full address via reverse geocoding], [X miles from home]. You may recognize where she is. If not, consider reaching out or requesting police assistance."
+
+Implementation:
+- Use `CLGeocoder` (iOS built-in) to convert GPS → street address
+- No "Travel Mode" toggle needed—app just reports context
+- Full address shared immediately, no extra tap required
+- User consented during onboarding: "When you don't respond to a check-in, your current location (including address) will be shared with your Care Circle members to help them find you."
+
+No legal concern—user explicitly added Care Circle members, set their own threshold, and was warned location would be shared in emergencies. Standard for location-sharing apps (Find My, Life360), and WellnessCheck is actually *more* protective since it only shares during emergencies, not 24/7.
+
+**Technical Notes**
+
+- Explored remote development options (SSH to Mac, GitHub access from Claude.ai)
+- GitHub repo is public but subdirectory navigation limited without direct raw URLs
+- React mockups used for rapid visualization in chat; not usable as production code
+
+**Next Session Priorities**
+
+- Implement slider-based threshold in settings/onboarding
+- Wire SmartMonitoringService to actual HealthKit data
+- Design Twilio + web acknowledgment flow
+- Update CLAUDE.md, README.md, TODO.md with decisions from this session
+
 ---
 
 ## 2026-01-10 (Evening Session)

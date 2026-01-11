@@ -12,6 +12,8 @@
 
 import Foundation
 import CoreLocation
+import Combine
+import MapKit
 
 /// Represents a home location with coordinates and optional address info
 struct HomeLocation: Codable, Equatable {
@@ -77,7 +79,6 @@ class LocationService: NSObject, ObservableObject {
     // MARK: - Private Properties
 
     private let locationManager = CLLocationManager()
-    private let geocoder = CLGeocoder()
 
     /// Continuation for async location requests
     private var locationContinuation: CheckedContinuation<LocationResult, Never>?
@@ -146,8 +147,8 @@ class LocationService: NSObject, ObservableObject {
         currentLocation = nil
         currentAddress = nil
 
-        // Check authorization
-        guard isLocationAuthorized else {
+        // Check authorization - request permission if not yet determined
+        if !isLocationAuthorized {
             if authorizationStatus == .denied {
                 return .permissionDenied
             } else if authorizationStatus == .restricted {
@@ -158,6 +159,7 @@ class LocationService: NSObject, ObservableObject {
                 if !granted {
                     return .permissionDenied
                 }
+                // Permission granted, continue with location fetch
             }
         }
 
@@ -180,34 +182,50 @@ class LocationService: NSObject, ObservableObject {
     }
 
     /// Reverse geocodes a location to get a human-readable address
+    /// Uses MapKit's MKReverseGeocodingRequest on iOS 26+, falls back to CLGeocoder on older versions
     func reverseGeocode(location: CLLocation) async -> String? {
         do {
-            let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            if #available(iOS 26, *) {
+                // iOS 26+: Use new MapKit API with MKAddress
+                guard let request = MKReverseGeocodingRequest(location: location) else {
+                    return nil
+                }
+                let mapItems = try await request.mapItems
+                guard let mapItem = mapItems.first,
+                      let address = mapItem.address else {
+                    return nil
+                }
+                // Use shortAddress if available (street + city), otherwise fall back to fullAddress
+                return address.shortAddress ?? address.fullAddress
+            } else {
+                // iOS 16-25: Use CLGeocoder (deprecated in iOS 26 but necessary for backwards compatibility)
+                let geocoder = CLGeocoder()
+                let placemarks = try await geocoder.reverseGeocodeLocation(location)
 
-            guard let placemark = placemarks.first else {
-                return nil
+                guard let placemark = placemarks.first else {
+                    return nil
+                }
+
+                // Build a readable address string from placemark components
+                var addressParts: [String] = []
+
+                if let streetNumber = placemark.subThoroughfare,
+                   let streetName = placemark.thoroughfare {
+                    addressParts.append("\(streetNumber) \(streetName)")
+                } else if let streetName = placemark.thoroughfare {
+                    addressParts.append(streetName)
+                }
+
+                if let city = placemark.locality {
+                    addressParts.append(city)
+                }
+
+                if let state = placemark.administrativeArea {
+                    addressParts.append(state)
+                }
+
+                return addressParts.isEmpty ? nil : addressParts.joined(separator: ", ")
             }
-
-            // Build a readable address string
-            var addressParts: [String] = []
-
-            if let streetNumber = placemark.subThoroughfare,
-               let streetName = placemark.thoroughfare {
-                addressParts.append("\(streetNumber) \(streetName)")
-            } else if let streetName = placemark.thoroughfare {
-                addressParts.append(streetName)
-            }
-
-            if let city = placemark.locality {
-                addressParts.append(city)
-            }
-
-            if let state = placemark.administrativeArea {
-                addressParts.append(state)
-            }
-
-            return addressParts.isEmpty ? nil : addressParts.joined(separator: ", ")
-
         } catch {
             // Geocoding failed - not critical, we can proceed without address
             print("Reverse geocoding failed: \(error.localizedDescription)")
