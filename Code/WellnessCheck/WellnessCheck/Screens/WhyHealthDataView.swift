@@ -48,7 +48,7 @@ struct WhyHealthDataView: View {
                             .foregroundColor(primaryTextColor)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Text("Your iPhone (and Apple Watch, if you have one) already tracks things like how much you move around during the day.")
+                        Text("Your iPhone already tracks things like how much you move around during the day.")
                             .font(.system(size: 20))
                             .foregroundColor(primaryTextColor)
                             .fixedSize(horizontal: false, vertical: true)
@@ -187,15 +187,15 @@ struct WhyHealthDataView: View {
 
 struct HealthDataRow: View {
     let icon: String
-    let text: String
-    
+    let text: LocalizedStringKey
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 24))
                 .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
                 .frame(width: 30)
-            
+
             Text(text)
                 .font(.system(size: 18))
                 .foregroundColor(.gray)

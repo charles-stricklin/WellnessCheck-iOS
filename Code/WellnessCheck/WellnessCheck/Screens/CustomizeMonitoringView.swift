@@ -172,26 +172,30 @@ struct CustomizeMonitoringView: View {
 // MARK: - Toggle Row Component
 
 struct MonitoringToggleRow: View {
-    let title: String
-    let description: String
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
     @Binding var isOn: Bool
-    
+
+    // Plain strings for accessibility (LocalizedStringKey can't be interpolated)
+    var accessibilityTitle: String = ""
+    var accessibilityDescription: String = ""
+
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 20, weight: .medium))
                     .foregroundColor(.primary)
-                
+
                 Text(description)
                     .font(.system(size: 16))
                     .foregroundColor(.secondary)
                     .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            
+
             Spacer()
-            
+
             Toggle("", isOn: $isOn)
                 .labelsHidden()
                 .toggleStyle(SwitchToggleStyle(tint: .green))
@@ -200,9 +204,9 @@ struct MonitoringToggleRow: View {
         .padding(.vertical, 16)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title). \(description)")
-        .accessibilityValue(isOn ? "On" : "Off")
-        .accessibilityHint("Double tap to toggle")
+        .accessibilityLabel("\(accessibilityTitle). \(accessibilityDescription)")
+        .accessibilityValue(isOn ? String(localized: "On") : String(localized: "Off"))
+        .accessibilityHint(String(localized: "Double tap to toggle"))
     }
 }
 

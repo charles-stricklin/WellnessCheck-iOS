@@ -31,7 +31,7 @@ struct HowItWorksView: View {
                             .padding(.horizontal, 32)
                     }
                     
-                    Text("WellnessCheck is your personal safety assistant that keeps you connected to the people who care about you. We work with your iPhone and other devices to monitor your activity, remind you about medications and appointments, organize your medical information, and make sure your Care Circle knows if you need help.")
+                    Text("WellnessCheck is your personal safety assistant that keeps you connected to the people who care about you. We work with your iPhone to monitor your activity and make sure your Care Circle knows if you need help.")
                         .font(.system(size: 18))
                         .foregroundColor(secondaryTextColor)
                         .multilineTextAlignment(.center)
@@ -59,21 +59,24 @@ struct HowItWorksView: View {
                             colorScheme: colorScheme
                         )
                         
-                        ExplanationCard(
-                            icon: "pills.circle",
-                            title: "Medication Reminders",
-                            description: "Never miss a dose. WellnessCheck reminds you when it's time to take your medications and keeps track of your schedule.",
-                            colorScheme: colorScheme
-                        )
-                        
-                        ExplanationCard(
-                            icon: "calendar.badge.clock",
-                            title: "Track Appointments & Doctors",
-                            description: "Keep all your physicians' contact information in one place and get reminders for upcoming appointments.",
-                            colorScheme: colorScheme
-                        )
-                        
-                        // MARK: - Future v2 Features (commented out for v1)
+                        // MARK: - Future Features (commented out for v1)
+                        // Medication reminders
+//                        ExplanationCard(
+//                            icon: "pills.circle",
+//                            title: "Medication Reminders",
+//                            description: "Never miss a dose. WellnessCheck reminds you when it's time to take your medications and keeps track of your schedule.",
+//                            colorScheme: colorScheme
+//                        )
+
+                        // Appointments & doctors
+//                        ExplanationCard(
+//                            icon: "calendar.badge.clock",
+//                            title: "Track Appointments & Doctors",
+//                            description: "Keep all your physicians' contact information in one place and get reminders for upcoming appointments.",
+//                            colorScheme: colorScheme
+//                        )
+
+                        // MARK: - Future v2 Features
                         // Apple Watch integration
 //                        ExplanationCard(
 //                            icon: "applewatch",
@@ -140,23 +143,23 @@ struct HowItWorksView: View {
 
 struct ExplanationCard: View {
     let icon: String
-    let title: String
-    let description: String
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
     let colorScheme: ColorScheme
     var isOptional: Bool = false
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 32))
                 .foregroundColor(isOptional ? Color.gray : Color(red: 0.102, green: 0.227, blue: 0.322))
                 .frame(width: 50, height: 50)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.102, green: 0.227, blue: 0.322))
-                
+
                 Text(description)
                     .font(.system(size: 18))
                     .foregroundColor(.gray)

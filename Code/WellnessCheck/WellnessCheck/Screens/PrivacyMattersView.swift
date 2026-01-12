@@ -103,23 +103,23 @@ struct PrivacyMattersView: View {
 
 struct PrivacyCard: View {
     let icon: String
-    let title: String
-    let description: String
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
     let colorScheme: ColorScheme
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 28))
                 .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
                 .frame(width: 44, height: 44)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
                     .font(.system(size: 19, weight: .semibold))
                     .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.102, green: 0.227, blue: 0.322))
                     .fixedSize(horizontal: false, vertical: true)
-                
+
                 Text(description)
                     .font(.system(size: 17))
                     .foregroundColor(.gray)

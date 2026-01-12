@@ -48,16 +48,24 @@ extension CNContact {
     var firstName: String {
         givenName
     }
-    
+
     var lastName: String {
         familyName
     }
-    
+
     var primaryPhoneNumber: String? {
         phoneNumbers.first?.value.stringValue
     }
-    
+
     var primaryEmailAddress: String? {
         emailAddresses.first?.value as String?
+    }
+
+    /// Returns the contact's thumbnail image data if available, otherwise the full image data
+    var contactImageData: Data? {
+        if let thumbnailData = thumbnailImageData {
+            return thumbnailData
+        }
+        return imageData
     }
 }

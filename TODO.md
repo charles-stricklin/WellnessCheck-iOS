@@ -1,6 +1,6 @@
 # WellnessCheck Tasks
 
-**Last Updated:** January 10, 2026
+**Last Updated:** January 11, 2026
 
 ---
 
@@ -52,6 +52,13 @@
 ---
 
 ## Done
+- [x] Spanish localization complete — 2026-01-11
+- [x] Care Circle contact photos from iOS Contacts — 2026-01-11
+- [x] Care Circle member reordering (up/down arrows, position numbers) — 2026-01-11
+- [x] EditCareCircleMemberView redesign (photo, name, editable phone/email) — 2026-01-11
+- [x] In-app language switching (locale environment) — 2026-01-11
+- [x] LocalizedStringKey fixes for custom components — 2026-01-11
+- [x] Localization string catalog populated (143 strings) — 2026-01-11
 - [x] Full onboarding flow (11 screens) — 2026-01-10
 - [x] Home location setup with GPS + confirm — 2026-01-10
 - [x] Customize Monitoring screen — 2026-01-10

@@ -87,18 +87,19 @@ struct WhyNotificationsView: View {
                         Text("Notifications also help with:")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(primaryTextColor)
-                        
+
                         VStack(alignment: .leading, spacing: 16) {
-                            NotificationPurposeRow(
-                                icon: "pills.fill",
-                                text: "Reminding you to take your medications on time"
-                            )
-                            
-                            NotificationPurposeRow(
-                                icon: "calendar.badge.clock",
-                                text: "Alerting you about upcoming doctor appointments"
-                            )
-                            
+                            // MARK: - Future Features (commented out for v1)
+//                            NotificationPurposeRow(
+//                                icon: "pills.fill",
+//                                text: "Reminding you to take your medications on time"
+//                            )
+//
+//                            NotificationPurposeRow(
+//                                icon: "calendar.badge.clock",
+//                                text: "Alerting you about upcoming doctor appointments"
+//                            )
+
                             NotificationPurposeRow(
                                 icon: "checkmark.circle.fill",
                                 text: "Letting you know when we've notified your Care Circle"
@@ -159,15 +160,15 @@ struct WhyNotificationsView: View {
 
 struct NotificationPurposeRow: View {
     let icon: String
-    let text: String
-    
+    let text: LocalizedStringKey
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 24))
                 .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
                 .frame(width: 30)
-            
+
             Text(text)
                 .font(.system(size: 18))
                 .foregroundColor(.gray)

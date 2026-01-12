@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Contacts
+import UIKit
 
 struct CareCircleListView: View {
     // MARK: - Properties
@@ -19,7 +20,7 @@ struct CareCircleListView: View {
     @State private var showContactPicker = false
     @State private var selectedMemberToEdit: CareCircleMember? = nil
     @State private var showConfirmContact = false
-    @State private var selectedContactData: (firstName: String, lastName: String, phone: String, email: String?)? = nil
+    @State private var selectedContactData: (firstName: String, lastName: String, phone: String, email: String?, imageData: Data?)? = nil
     
     // MARK: - Body
     
@@ -71,11 +72,18 @@ struct CareCircleListView: View {
                         // Member list
                         ScrollView {
                             VStack(spacing: 12) {
-                                ForEach(viewModel.members) { member in
-                                    CareCircleMemberRow(member: member)
-                                        .onTapGesture {
-                                            selectedMemberToEdit = member
-                                        }
+                                ForEach(Array(viewModel.members.enumerated()), id: \.element.id) { index, member in
+                                    CareCircleMemberRow(
+                                        member: member,
+                                        position: index + 1,
+                                        isFirst: index == 0,
+                                        isLast: index == viewModel.members.count - 1,
+                                        onMoveUp: { viewModel.moveMemberUp(member) },
+                                        onMoveDown: { viewModel.moveMemberDown(member) }
+                                    )
+                                    .onTapGesture {
+                                        selectedMemberToEdit = member
+                                    }
                                 }
                             }
                             .padding(.horizontal, 24)
@@ -152,12 +160,13 @@ struct CareCircleListView: View {
             }
             .sheet(isPresented: $showContactPicker) {
                 ContactPicker(isPresented: $showContactPicker) { contact in
-                    // Store the selected contact data and show confirmation view
+                    // Store the selected contact data (including photo) and show confirmation view
                     selectedContactData = (
                         firstName: contact.firstName,
                         lastName: contact.lastName,
                         phone: contact.primaryPhoneNumber ?? "",
-                        email: contact.primaryEmailAddress
+                        email: contact.primaryEmailAddress,
+                        imageData: contact.contactImageData
                     )
                     showConfirmContact = true
                 }
@@ -169,7 +178,8 @@ struct CareCircleListView: View {
                         firstName: contactData.firstName,
                         lastName: contactData.lastName,
                         phoneNumber: contactData.phone,
-                        email: contactData.email
+                        email: contactData.email,
+                        imageData: contactData.imageData
                     )
                 }
             }
@@ -181,20 +191,63 @@ struct CareCircleListView: View {
 
 struct CareCircleMemberRow: View {
     let member: CareCircleMember
-    
+    let position: Int
+    let isFirst: Bool
+    let isLast: Bool
+    let onMoveUp: () -> Void
+    let onMoveDown: () -> Void
+
     var body: some View {
-        HStack(spacing: 16) {
-            // Avatar circle with initials
-            ZStack {
-                Circle()
-                    .fill(member.isPrimary ? Color.blue : Color.gray.opacity(0.3))
-                    .frame(width: 50, height: 50)
-                
-                Text("\(member.firstName.prefix(1))\(member.lastName.prefix(1))")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(member.isPrimary ? .white : .gray)
+        HStack(spacing: 12) {
+            // Order number
+            Text("\(position)")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundColor(.blue)
+                .frame(width: 36)
+
+            // Up/Down arrows
+            VStack(spacing: 4) {
+                Button(action: onMoveUp) {
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(isFirst ? .gray.opacity(0.3) : .blue)
+                }
+                .disabled(isFirst)
+
+                Button(action: onMoveDown) {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(isLast ? .gray.opacity(0.3) : .blue)
+                }
+                .disabled(isLast)
             }
-            
+            .frame(width: 30)
+
+            // Avatar - show contact photo if available, otherwise initials
+            if let imageData = member.imageData,
+               let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(member.isPrimary ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                    )
+            } else {
+                // Fallback to initials
+                ZStack {
+                    Circle()
+                        .fill(member.isPrimary ? Color.blue : Color.gray.opacity(0.3))
+                        .frame(width: 50, height: 50)
+
+                    Text("\(member.firstName.prefix(1))\(member.lastName.prefix(1))")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(member.isPrimary ? .white : .gray)
+                }
+            }
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     Text(member.fullName)
@@ -224,9 +277,9 @@ struct CareCircleMemberRow: View {
                     invitationStatusBadge(for: member)
                 }
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
         }

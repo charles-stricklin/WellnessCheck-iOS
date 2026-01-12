@@ -77,6 +77,41 @@ class CareCircleViewModel: ObservableObject {
         }
     }
 
+    /// Move a member up in the notification order (towards position 1)
+    func moveMemberUp(_ member: CareCircleMember) {
+        guard let index = members.firstIndex(where: { $0.id == member.id }),
+              index > 0 else { return }
+
+        members.swapAt(index, index - 1)
+        updatePrimaryStatus()
+        saveMembers()
+    }
+
+    /// Move a member down in the notification order (away from position 1)
+    func moveMemberDown(_ member: CareCircleMember) {
+        guard let index = members.firstIndex(where: { $0.id == member.id }),
+              index < members.count - 1 else { return }
+
+        members.swapAt(index, index + 1)
+        updatePrimaryStatus()
+        saveMembers()
+    }
+
+    /// Returns the 1-based position of a member in the notification order
+    func position(of member: CareCircleMember) -> Int? {
+        guard let index = members.firstIndex(where: { $0.id == member.id }) else {
+            return nil
+        }
+        return index + 1
+    }
+
+    /// Updates isPrimary so that only the first member is marked as primary
+    private func updatePrimaryStatus() {
+        for index in members.indices {
+            members[index].isPrimary = (index == 0)
+        }
+    }
+
     var hasPrimaryContact: Bool {
         members.contains { $0.isPrimary }
     }

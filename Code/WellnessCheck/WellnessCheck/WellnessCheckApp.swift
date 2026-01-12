@@ -17,20 +17,27 @@ struct WellnessCheckApp: App {
     /// Tracks whether user has completed onboarding
     @AppStorage(Constants.hasCompletedOnboardingKey) private var hasCompletedOnboarding = false
 
+    /// User's selected language preference (defaults to English)
+    @AppStorage(Constants.selectedLanguageKey) private var selectedLanguage = "en"
+
     // MARK: - Body
 
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding {
-                // Show main app dashboard after onboarding
-                MainDashboardView()
-            } else {
-                // Show onboarding flow for new users
-                OnboardingContainerView {
-                    // When onboarding is complete, update the flag
-                    hasCompletedOnboarding = true
+            Group {
+                if hasCompletedOnboarding {
+                    // Show main app dashboard after onboarding
+                    MainDashboardView()
+                } else {
+                    // Show onboarding flow for new users
+                    OnboardingContainerView {
+                        // When onboarding is complete, update the flag
+                        hasCompletedOnboarding = true
+                    }
                 }
             }
+            // Apply the user's selected language to all views
+            .environment(\.locale, Locale(identifier: selectedLanguage))
         }
     }
 }

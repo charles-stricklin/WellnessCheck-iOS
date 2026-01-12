@@ -115,6 +115,7 @@ class OnboardingViewModel: ObservableObject {
         userDefaults.removeObject(forKey: Constants.userEmailKey)
         userDefaults.removeObject(forKey: Constants.homeLocationKey)
         userDefaults.removeObject(forKey: Constants.homeLocationDeferredKey)
+        userDefaults.removeObject(forKey: Constants.selectedLanguageKey)
 
         // Reset permission flags
         hasHealthKitPermission = false
@@ -122,7 +123,7 @@ class OnboardingViewModel: ObservableObject {
         hasHomeLocation = false
         homeLocationDeferred = false
         #endif
-        
+
         checkExistingPermissions()
     }
 

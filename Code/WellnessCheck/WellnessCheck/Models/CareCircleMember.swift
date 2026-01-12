@@ -20,6 +20,7 @@ struct CareCircleMember: Identifiable, Codable {
     var invitationStatus: InvitationStatus
     var invitedAt: Date?
     var acceptedAt: Date?
+    var imageData: Data? // Contact photo from iOS Contacts, if available
 
     enum NotificationPreference: String, Codable, CaseIterable {
         case sms = "Text Message"
@@ -45,7 +46,8 @@ struct CareCircleMember: Identifiable, Codable {
         notificationPreference: NotificationPreference = .sms,
         invitationStatus: InvitationStatus = .pending,
         invitedAt: Date? = nil,
-        acceptedAt: Date? = nil
+        acceptedAt: Date? = nil,
+        imageData: Data? = nil
     ) {
         self.id = id
         self.firstName = firstName
@@ -58,6 +60,7 @@ struct CareCircleMember: Identifiable, Codable {
         self.invitationStatus = invitationStatus
         self.invitedAt = invitedAt
         self.acceptedAt = acceptedAt
+        self.imageData = imageData
     }
     
     var fullName: String {

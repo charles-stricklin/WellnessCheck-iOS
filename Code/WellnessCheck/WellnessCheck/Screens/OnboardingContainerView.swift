@@ -17,6 +17,10 @@ struct OnboardingContainerView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @Environment(\.dismiss) private var dismiss
 
+    /// User's selected language preference - persisted to UserDefaults and read by WellnessCheckApp
+    /// to apply the correct locale environment modifier
+    @AppStorage(Constants.selectedLanguageKey) private var selectedLanguage = "en"
+
     /// Callback when onboarding is complete
     let onComplete: () -> Void
 
@@ -34,7 +38,10 @@ struct OnboardingContainerView: View {
                     switch viewModel.currentStep {
                     case .languageSelection:
                         LanguageSelectionView { language in
+                            // Save to both the view model and UserDefaults (via @AppStorage)
+                            // The @AppStorage binding triggers WellnessCheckApp to update the locale
                             viewModel.selectedLanguage = language
+                            selectedLanguage = language
                             viewModel.goToNextStep()
                         }
                         .transition(.asymmetric(
@@ -161,6 +168,9 @@ struct OnboardingContainerView: View {
                 onComplete()
             }
         }
+        // Apply the selected language locale immediately within this view hierarchy
+        // This ensures the locale change takes effect right after selection
+        .environment(\.locale, Locale(identifier: selectedLanguage))
     }
 }
 

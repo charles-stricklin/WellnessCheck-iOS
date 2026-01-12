@@ -21,6 +21,7 @@ struct ConfirmCareCircleMemberView: View {
     let lastName: String
     let phoneNumber: String
     let email: String?
+    let imageData: Data?
 
     @State private var selectedRelationship: String = "Friend"
     @State private var showInvitationPreview = false
@@ -169,7 +170,11 @@ struct ConfirmCareCircleMemberView: View {
                 }
             } message: {
                 if let result = invitationResult {
-                    Text(result.displayMessage)
+                    let testMode = String(localized: "(Test Mode)")
+                    let toLabel = String(localized: "To:")
+                    let phoneLabel = String(localized: "Phone:")
+                    let readyMessage = String(localized: "Invitation ready to send. Not actually sent in test mode.")
+                    Text("\(testMode)\n\n\(toLabel) \(result.recipientName)\n\(phoneLabel) \(result.recipientPhone)\n\n\(readyMessage)")
                 }
             }
         }
@@ -187,7 +192,8 @@ struct ConfirmCareCircleMemberView: View {
             email: email,
             relationship: selectedRelationship,
             isPrimary: viewModel.members.isEmpty, // First one is primary
-            notificationPreference: .sms
+            notificationPreference: .sms,
+            imageData: imageData
         )
 
         // Add member to the Care Circle
@@ -222,6 +228,7 @@ struct ConfirmCareCircleMemberView: View {
         firstName: "Sharon",
         lastName: "Smith",
         phoneNumber: "+1 (555) 123-4567",
-        email: "sharon@example.com"
+        email: "sharon@example.com",
+        imageData: nil
     )
 }

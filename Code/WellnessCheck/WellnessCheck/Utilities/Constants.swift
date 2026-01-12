@@ -67,6 +67,9 @@ struct Constants {
     /// Key for whether home location setup was deferred
     static let homeLocationDeferredKey = "homeLocationDeferred"
 
+    /// Key for user's selected language (en or es)
+    static let selectedLanguageKey = "selectedLanguage"
+
     // MARK: - App Info
 
     /// App display name

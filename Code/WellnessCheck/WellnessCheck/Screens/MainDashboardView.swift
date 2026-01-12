@@ -193,7 +193,7 @@ struct HomeTabView: View {
         userName.components(separatedBy: " ").first ?? userName
     }
 
-    private var greetingText: String {
+    private var greetingText: LocalizedStringKey {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
         case 0..<12:
@@ -325,7 +325,7 @@ struct ActivityCard: View {
 struct ActivityStatBox: View {
     let emoji: String
     let value: String
-    let label: String
+    let label: LocalizedStringKey
     let progress: Double?
 
     var body: some View {

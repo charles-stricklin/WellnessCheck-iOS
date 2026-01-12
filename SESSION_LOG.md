@@ -1,5 +1,102 @@
 # WellnessCheck Session Log
 
+### 2026-01-11 (Evening Session)
+
+**Spanish Localization Complete + Care Circle Enhancements**
+
+#### What Was Done
+
+**Localization Fixes**
+- Fixed in-app language switching: Added `.environment(\.locale, Locale(identifier: selectedLanguage))` to WellnessCheckApp and OnboardingContainerView
+- Fixed custom components not localizing: Changed parameter types from `String` to `LocalizedStringKey` in ExplanationCard, PrivacyCard, NotificationPurposeRow, HealthDataRow, CareCircleStep, MonitoringToggleRow, SummaryRow, ActivityStatBox
+- Fixed SummaryRow for dynamic content: Changed subtitle/status back to `String` with `String(localized:)` at call sites for computed values
+- Fixed invitation preview localization: Used `String(localized:)` for dynamic label composition
+- Added Spanish translations for new strings: "Active", "member", "members", "Set", "Not Set"
+
+**Care Circle Enhancements**
+- Added contact photo support throughout Care Circle flow:
+  - Added `imageData: Data?` to CareCircleMember model
+  - Added `contactImageData` helper to CNContact extension
+  - CareCircleListView captures and displays contact photos
+  - ConfirmCareCircleMemberView passes photo through
+- Redesigned EditCareCircleMemberView:
+  - Shows contact photo (or initials fallback) prominently
+  - Displays full name below photo
+  - Editable phone number and email fields
+  - Relationship picker
+  - Save Changes and Remove from Care Circle buttons
+- Added Care Circle member reordering:
+  - Added `moveMemberUp()`, `moveMemberDown()`, `position(of:)` to CareCircleViewModel
+  - CareCircleMemberRow shows position number (1, 2, 3...)
+  - Up/down arrow buttons for reordering
+  - First member automatically becomes PRIMARY
+
+**v2 Features Commented Out**
+- HowItWorksView: Commented out Medication Reminders and Track Appointments cards
+- WhyNotificationsView: Commented out medications and appointments notification purposes
+- WhyHealthDataView: Removed "(and Apple Watch, if you have one)" parenthetical
+
+**Other Fixes**
+- Added ScrollView to LanguageSelectionView for future language scalability
+- Fixed LocationService warning: Moved `CLLocationManager.locationServicesEnabled()` off main thread to avoid UI unresponsiveness
+
+#### Technical Notes
+- SwiftUI localization quirk: `Text(stringVariable)` does NOT localize; only `Text("literal")` or `Text(LocalizedStringKey)` does
+- For dynamic strings needing localization, use `String(localized: "key")`
+- Contact photos use `thumbnailImageData` with `imageData` fallback
+
+#### Files Modified
+- WellnessCheckApp.swift, OnboardingContainerView.swift (locale environment)
+- HowItWorksView, PrivacyMattersView, WhyNotificationsView, WhyHealthDataView (LocalizedStringKey params)
+- CareCircleIntroView, CustomizeMonitoringView, CompletionView, MainDashboardView (LocalizedStringKey params)
+- CareCircleMember.swift (imageData property)
+- ContactPicker.swift (contactImageData helper)
+- CareCircleListView.swift (photos, position numbers, reorder arrows)
+- CareCircleViewModel.swift (move up/down methods)
+- EditCareCircleMemberView.swift (complete redesign)
+- ConfirmCareCircleMemberView.swift (imageData param, invitation localization)
+- LocationService.swift (async locationServicesEnabled check)
+- Localizable.xcstrings (150+ strings with full Spanish translations)
+
+#### Next Session
+- Dark mode testing pass
+- TestFlight preparation
+- Connect dashboard to real HealthKit/Care Circle data
+
+---
+
+### 2026-01-11 (Morning Session)
+
+**Localization String Catalog Setup**
+
+#### What Was Done
+- Populated Localizable.xcstrings with 143 user-facing strings extracted from all SwiftUI views
+- Added comments to each string for translator context
+- Set up plural variations for member count ("%lld member" / "%lld members")
+- Organized strings by screen/feature for easy maintenance
+- Strings cover: onboarding (11 screens), dashboard, Care Circle management, settings
+
+#### Screens Covered
+- WelcomeView, HowItWorksView, PrivacyMattersView
+- ProfileSetupView, CareCircleIntroView, AddCareCircleMemberView
+- ConfirmCareCircleMemberView, EditCareCircleMemberView, CareCircleListView
+- CompletionView, CustomizeMonitoringView, HomeLocationView
+- WhyNotificationsView, WhyHealthDataView, LanguageSelectionView
+- MainDashboardView, OnboardingContainerView
+
+#### Technical Notes
+- Using Xcode 15+ String Catalog format (.xcstrings)
+- SwiftUI Text() views automatically use LocalizedStringKey
+- Keys are the English strings themselves (no separate key constants needed)
+- Spanish translations ready to be added for v1.0
+
+#### Next Session
+- Add Spanish translations
+- Continue dark mode testing pass
+- TestFlight preparation
+
+---
+
 ### 2026-01-10 (Late Night Session)
 
 **Onboarding Complete + Dashboard Built**

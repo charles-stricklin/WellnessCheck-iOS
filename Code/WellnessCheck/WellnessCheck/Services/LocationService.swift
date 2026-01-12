@@ -164,7 +164,13 @@ class LocationService: NSObject, ObservableObject {
         }
 
         // Check if location services are enabled system-wide
-        guard CLLocationManager.locationServicesEnabled() else {
+        // This check is moved off the main thread to avoid UI unresponsiveness,
+        // as CLLocationManager.locationServicesEnabled() can block on main thread
+        let servicesEnabled = await Task.detached {
+            CLLocationManager.locationServicesEnabled()
+        }.value
+
+        guard servicesEnabled else {
             return .locationUnavailable
         }
 
