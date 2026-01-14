@@ -1,27 +1,26 @@
 # WellnessCheck Tasks
 
-**Last Updated:** January 11, 2026
+**Last Updated:** January 13, 2026
 
 ---
 
 ## In Progress
 - [ ] Dark mode testing pass
 - [ ] TestFlight preparation
+- [ ] Fix onboarding reset button (not responding)
 
 ---
 
 ## Up Next
-- [ ] Connect dashboard to real HealthKit data (steps, floors)
-- [ ] Connect Care Circle preview to actual stored members
 - [ ] Implement "I'm OK" message sending via Twilio
 - [ ] Fall detection integration (HealthKit)
+- [ ] Family Controls entitlement (pending Apple approval) — applied 2026-01-13
 
 ---
 
 ## Backlog
 
 ### Core Safety
-- [ ] Phone movement proof-of-life detection
 - [ ] Battery level tracking (for negative space context)
 - [ ] Negative space detection logic
 - [ ] Learned pattern deviation
@@ -52,6 +51,16 @@
 ---
 
 ## Done
+- [x] Dashboard connected to real HealthKit data (steps, floors) — 2026-01-13
+- [x] Care Circle preview shows actual stored members — 2026-01-13
+- [x] Phone pickup proxy via CoreMotion — 2026-01-13
+- [x] Splash screen with version number — 2026-01-13
+- [x] Fade-to-black on inactivity/background — 2026-01-13
+- [x] Tagline italicized "be" emphasis — 2026-01-13
+- [x] Removed redundant header gear icon — 2026-01-13
+- [x] Removed step goal/progress bar (not a fitness app) — 2026-01-13
+- [x] Swift 6 concurrency fixes — 2026-01-13
+- [x] Applied for Family Controls entitlement — 2026-01-13
 - [x] Spanish localization complete — 2026-01-11
 - [x] Care Circle contact photos from iOS Contacts — 2026-01-11
 - [x] Care Circle member reordering (up/down arrows, position numbers) — 2026-01-11

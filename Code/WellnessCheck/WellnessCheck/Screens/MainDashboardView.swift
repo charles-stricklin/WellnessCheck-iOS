@@ -3,12 +3,16 @@
 //  WellnessCheck
 //
 //  Created: v0.1.0 (2025-12-26)
-//  Last Modified: v0.2.0 (2026-01-10)
+//  Last Modified: v0.3.0 (2026-01-13)
 //
 //  By Charles Stricklin, Stricklin Development, LLC
 //
 //  Main dashboard view shown after onboarding is complete.
 //  Displays wellness status, daily activity, and Care Circle at a glance.
+//
+//  UPDATE 2026-01-13: Connected to real HealthKit data and Care Circle members.
+//  Steps and floors now pull from HealthKit. Care Circle preview shows actual
+//  stored members instead of mock data.
 //
 
 import SwiftUI
@@ -17,14 +21,19 @@ import SwiftUI
 struct MainDashboardView: View {
     // MARK: - Properties
 
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(Constants.userNameKey) private var userName = ""
     @State private var selectedTab: DashboardTab = .home
+
+    /// Shared ViewModel for dashboard data (HealthKit + Care Circle)
+    /// StateObject ensures it persists across view updates
+    @StateObject private var viewModel = DashboardViewModel()
 
     // MARK: - Body
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeTabView(userName: userName)
+            HomeTabView(userName: userName, viewModel: viewModel)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -53,6 +62,13 @@ struct MainDashboardView: View {
                 .tag(DashboardTab.settings)
         }
         .tint(.blue)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            // Record phone pickup when app comes to foreground
+            // This is a reliable proxy signal — user picked up phone and opened app
+            if newPhase == .active && oldPhase != .active {
+                viewModel.recordPhonePickup()
+            }
+        }
     }
 }
 
@@ -70,15 +86,8 @@ enum DashboardTab {
 struct HomeTabView: View {
     let userName: String
 
-    // Mock data - will be replaced with real data from services
-    @State private var isAllGood = true
-    @State private var lastActivity = "2 minutes ago"
-    @State private var learningDay = 5
-
-    @State private var steps = 3247
-    @State private var stepsGoal = 5000
-    @State private var floors = 2
-    @State private var phonePickups = 12
+    /// ViewModel providing real data from HealthKit and Care Circle
+    @ObservedObject var viewModel: DashboardViewModel
 
     @State private var showingImOkConfirmation = false
 
@@ -99,27 +108,15 @@ struct HomeTabView: View {
                         }
 
                         Spacer()
-
-                        NavigationLink(destination: SettingsTabView()) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color(.systemGray5))
-                                    .frame(width: 50, height: 50)
-
-                                Image(systemName: "gearshape.fill")
-                                    .font(.system(size: 22))
-                                    .foregroundColor(.secondary)
-                            }
-                        }
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 8)
 
                     // MARK: - Main Status Card
                     MainStatusCard(
-                        isAllGood: isAllGood,
-                        lastActivity: lastActivity,
-                        learningDay: learningDay
+                        isAllGood: viewModel.isAllGood,
+                        lastActivity: viewModel.lastActivityDescription,
+                        learningDay: viewModel.learningDay
                     )
                     .padding(.horizontal, 16)
 
@@ -131,10 +128,9 @@ struct HomeTabView: View {
                             .padding(.horizontal, 4)
 
                         ActivityCard(
-                            steps: steps,
-                            stepsGoal: stepsGoal,
-                            floors: floors,
-                            phonePickups: phonePickups
+                            steps: viewModel.steps,
+                            floors: viewModel.floors,
+                            phonePickups: viewModel.phonePickups
                         )
                     }
                     .padding(.horizontal, 16)
@@ -146,36 +142,38 @@ struct HomeTabView: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 4)
 
-                        CareCirclePreviewCard()
+                        CareCirclePreviewCard(members: viewModel.careCircleViewModel.members)
                     }
                     .padding(.horizontal, 16)
 
-                    // MARK: - Quick Action
-                    Button(action: {
-                        showingImOkConfirmation = true
-                    }) {
-                        HStack(spacing: 8) {
-                            Text("💬")
-                                .font(.system(size: 20))
+                    // MARK: - Quick Action (only show if Care Circle has members)
+                    if !viewModel.careCircleViewModel.members.isEmpty {
+                        Button(action: {
+                            showingImOkConfirmation = true
+                        }) {
+                            HStack(spacing: 8) {
+                                Text("💬")
+                                    .font(.system(size: 20))
 
-                            Text("Send \"I'm OK\" to Care Circle")
-                                .font(.system(size: 18, weight: .medium))
+                                Text("Send \"I'm OK\" to Care Circle")
+                                    .font(.system(size: 18, weight: .medium))
+                            }
+                            .foregroundColor(.blue)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 60)
+                            .background(Color(.systemBackground))
+                            .cornerRadius(14)
                         }
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 60)
-                        .background(Color(.systemBackground))
-                        .cornerRadius(14)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, 16)
-                    .alert("Send \"I'm OK\"?", isPresented: $showingImOkConfirmation) {
-                        Button("Cancel", role: .cancel) { }
-                        Button("Send") {
-                            // TODO: Actually send the message to Care Circle
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                        .alert("Send \"I'm OK\"?", isPresented: $showingImOkConfirmation) {
+                            Button("Cancel", role: .cancel) { }
+                            Button("Send") {
+                                // TODO: Actually send the message to Care Circle via Twilio
+                            }
+                        } message: {
+                            Text("This will notify your Care Circle that you're doing fine.")
                         }
-                    } message: {
-                        Text("This will notify your Care Circle that you're doing fine.")
                     }
 
                     Spacer(minLength: 20)
@@ -184,6 +182,15 @@ struct HomeTabView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationBarHidden(true)
+            .task {
+                // Request HealthKit authorization and fetch data on appear
+                await viewModel.requestHealthKitAuthorizationIfNeeded()
+                await viewModel.refreshData()
+            }
+            .refreshable {
+                // Pull-to-refresh support
+                await viewModel.refreshData()
+            }
         }
     }
 
@@ -211,7 +218,7 @@ struct HomeTabView: View {
 struct MainStatusCard: View {
     let isAllGood: Bool
     let lastActivity: String
-    let learningDay: Int
+    let learningDay: Int? // nil if learning period is complete
 
     var body: some View {
         VStack(spacing: 16) {
@@ -237,12 +244,12 @@ struct MainStatusCard: View {
                 .foregroundColor(.white.opacity(0.9))
 
             // Learning Period Badge (only show during first 14 days)
-            if learningDay <= 14 {
+            if let day = learningDay {
                 HStack(spacing: 6) {
                     Text("📊")
                         .font(.system(size: 14))
 
-                    Text("Learning your patterns • Day \(learningDay) of 14")
+                    Text("Learning your patterns • Day \(day) of 14")
                         .font(.system(size: 14))
                 }
                 .padding(.horizontal, 16)
@@ -271,27 +278,24 @@ struct MainStatusCard: View {
 
 struct ActivityCard: View {
     let steps: Int
-    let stepsGoal: Int
     let floors: Int
     let phonePickups: Int
 
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 4) {
-                // Steps
+                // Steps — shown as activity indicator, not a goal to hit
                 ActivityStatBox(
                     emoji: "👟",
                     value: "\(steps.formatted())",
-                    label: "steps",
-                    progress: Double(steps) / Double(stepsGoal)
+                    label: "steps"
                 )
 
                 // Floors
                 ActivityStatBox(
                     emoji: "🏢",
                     value: "\(floors)",
-                    label: "floors climbed",
-                    progress: nil
+                    label: "floors climbed"
                 )
             }
 
@@ -326,7 +330,6 @@ struct ActivityStatBox: View {
     let emoji: String
     let value: String
     let label: LocalizedStringKey
-    let progress: Double?
 
     var body: some View {
         VStack(spacing: 4) {
@@ -340,23 +343,6 @@ struct ActivityStatBox: View {
             Text(label)
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
-
-            // Progress bar for steps
-            if let progress = progress {
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color(.systemGray5))
-                            .frame(height: 4)
-
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.green)
-                            .frame(width: geometry.size.width * min(progress, 1.0), height: 4)
-                    }
-                }
-                .frame(height: 4)
-                .padding(.top, 8)
-            }
         }
         .padding(16)
         .frame(maxWidth: .infinity)
@@ -367,52 +353,108 @@ struct ActivityStatBox: View {
 // MARK: - Care Circle Preview Card
 
 struct CareCirclePreviewCard: View {
-    // Mock data - will be replaced with real data
-    private let members = [
-        (name: "Sarah", initial: "S"),
-        (name: "Michael", initial: "M")
-    ]
+    /// Real Care Circle members from the ViewModel
+    let members: [CareCircleMember]
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(Array(members.enumerated()), id: \.offset) { index, member in
-                HStack(spacing: 14) {
-                    // Avatar
-                    ZStack {
-                        Circle()
-                            .fill(Color.blue.opacity(0.15))
-                            .frame(width: 48, height: 48)
+            if members.isEmpty {
+                // Empty state — prompt user to add members
+                VStack(spacing: 12) {
+                    Image(systemName: "person.2.circle")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary.opacity(0.5))
 
-                        Text(member.initial)
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.blue)
-                    }
+                    Text("No Care Circle members yet")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
 
-                    // Name and status
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(member.name)
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.primary)
-
-                        HStack(spacing: 4) {
-                            Text("No alerts sent")
-                                .font(.system(size: 14))
-                                .foregroundColor(.green)
-
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.green)
-                        }
-                    }
-
-                    Spacer()
+                    Text("Add people who should be notified if something seems wrong.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
                 }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 20)
+                .padding(.vertical, 24)
+                .frame(maxWidth: .infinity)
+            } else {
+                // Show up to 3 members in the preview
+                ForEach(Array(members.prefix(3).enumerated()), id: \.element.id) { index, member in
+                    HStack(spacing: 14) {
+                        // Avatar — show photo if available, otherwise initials
+                        if let imageData = member.imageData,
+                           let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
+                        } else {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.blue.opacity(0.15))
+                                    .frame(width: 48, height: 48)
 
-                if index < members.count - 1 {
+                                Text(member.firstName.prefix(1).uppercased())
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.blue)
+                            }
+                        }
+
+                        // Name and status
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(member.firstName)
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(.primary)
+
+                                // Show primary badge for first member
+                                if member.isPrimary {
+                                    Text("PRIMARY")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.blue)
+                                        .cornerRadius(4)
+                                }
+                            }
+
+                            HStack(spacing: 4) {
+                                Text("No alerts sent")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.green)
+
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.green)
+                            }
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 20)
+
+                    if index < min(members.count, 3) - 1 {
+                        Divider()
+                            .padding(.leading, 82)
+                    }
+                }
+
+                // If there are more than 3 members, show a "more" indicator
+                if members.count > 3 {
                     Divider()
                         .padding(.leading, 82)
+
+                    HStack {
+                        Spacer()
+                        Text("+\(members.count - 3) more")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding(.vertical, 12)
                 }
             }
         }
@@ -510,12 +552,14 @@ struct SettingsTabView: View {
                 }
 
                 Section {
-                    Button(role: .destructive) {
+                    Button {
                         // Reset onboarding for testing
                         hasCompletedOnboarding = false
                     } label: {
                         Label("Reset Onboarding (Dev)", systemImage: "arrow.counterclockwise")
+                            .foregroundColor(.red)
                     }
+                    .buttonStyle(.borderless)
                 }
             }
             .navigationTitle("Settings")
@@ -525,6 +569,32 @@ struct SettingsTabView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("Dashboard") {
     MainDashboardView()
+}
+
+#Preview("Care Circle Empty") {
+    CareCirclePreviewCard(members: [])
+        .padding()
+        .background(Color(.systemGroupedBackground))
+}
+
+#Preview("Care Circle With Members") {
+    CareCirclePreviewCard(members: [
+        CareCircleMember(
+            firstName: "Sarah",
+            lastName: "Johnson",
+            phoneNumber: "555-1234",
+            relationship: "Daughter",
+            isPrimary: true
+        ),
+        CareCircleMember(
+            firstName: "Michael",
+            lastName: "Johnson",
+            phoneNumber: "555-5678",
+            relationship: "Son"
+        )
+    ])
+    .padding()
+    .background(Color(.systemGroupedBackground))
 }

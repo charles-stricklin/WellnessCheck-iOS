@@ -132,7 +132,7 @@ struct LanguageSelectionView: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color.black : Color(red: 0.784, green: 0.902, blue: 0.961)
+        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color(red: 0.784, green: 0.902, blue: 0.961)
     }
     
     private var primaryTextColor: Color {

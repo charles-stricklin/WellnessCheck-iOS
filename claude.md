@@ -79,9 +79,9 @@ Care Circle companion app. Planned but not part of v1. Build Care Circle managem
 
 ## Development Environment
 
-- **Project Root:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck/
-- **Xcode Project:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck/Code/WellnessCheck/
-- **GitHub:** github.com/charles-stricklin/WellnessCheck
+- **Project Root:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck-iOS/
+- **Xcode Project:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck/Code/WellnessCheck-iOS/
+- **GitHub:** github.com/charles-stricklin/WellnessCheck-iOS
 
 ### Backend
 - **Firebase:** Auth, Firestore, Cloud Functions, Cloud Messaging

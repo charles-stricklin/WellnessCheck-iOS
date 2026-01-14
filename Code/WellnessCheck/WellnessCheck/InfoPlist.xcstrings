@@ -72,6 +72,18 @@
           }
         }
       }
+    },
+    "NSMotionUsageDescription" : {
+      "comment" : "Privacy - Motion Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "WellnessCheck uses motion data to detect phone activity as part of your daily wellness monitoring. This helps alert your Care Circle if something seems wrong."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

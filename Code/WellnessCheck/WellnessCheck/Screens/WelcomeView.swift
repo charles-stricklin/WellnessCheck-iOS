@@ -48,7 +48,9 @@ struct WelcomeView: View {
                         .font(.system(size: 36, weight: .bold))
                         .foregroundColor(primaryTextColor)
                     
-                    Text("Living alone doesn't mean having to be alone")
+                    // Tagline — "be" is italicized to emphasize the distinction
+                    // between living alone and *being* alone
+                    Text("Living alone doesn't mean having to *be* alone.")
                         .font(.system(size: 20))
                         .foregroundColor(secondaryTextColor)
                         .multilineTextAlignment(.center)
@@ -99,7 +101,7 @@ struct WelcomeView: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color.black : Color("#C8E6F5")
+        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color("#C8E6F5")
     }
     
     private var primaryTextColor: Color {

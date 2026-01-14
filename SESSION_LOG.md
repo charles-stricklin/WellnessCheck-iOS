@@ -1,5 +1,73 @@
 # WellnessCheck Session Log
 
+### 2026-01-13 (Evening Session)
+
+**Dashboard Live Data + Splash Screen + Inactivity Fade**
+
+#### What Was Done
+
+**HealthKit Integration**
+- Created HealthKitService.swift: fetches real step count and floors climbed from HealthKit
+- Created DashboardViewModel.swift: coordinates HealthKit, Care Circle, and phone activity data
+- Dashboard now displays actual daily steps and floors from user's device
+- Added NSMotionUsageDescription for CoreMotion permissions
+
+**Phone Pickup Proxy (CoreMotion)**
+- Created PhoneActivityService.swift: approximates phone pickups via motion detection
+- Detects stationary→moving transitions as pickup events
+- Also counts app foreground events as pickups
+- Applied for Family Controls entitlement for real Screen Time API access (pending Apple approval)
+
+**Splash Screen**
+- Created SplashView.swift: displays app logo, name, tagline, and version number
+- Matches onboarding color scheme (light blue/dark blue swap for dark mode)
+- Shows for 2.5 seconds before transitioning to dashboard
+- Version pulled from bundle (CFBundleShortVersionString)
+
+**Fade-to-Black Feature**
+- App fades to black after 30 seconds of inactivity
+- Fades to black immediately when backgrounded
+- Tap to wake from black screen
+- Any touch interaction resets the inactivity timer
+
+**UI Refinements**
+- Italicized "be" in tagline: "Living alone doesn't mean having to *be* alone."
+- Removed step goal and progress bar (not a fitness app, just monitoring)
+- Removed redundant gear icon from Home tab header (Settings tab exists)
+
+**Swift 6 Fixes**
+- Fixed @MainActor concurrency errors in DashboardViewModel initializer
+- Changed default parameters to optional with nil, instantiate in init body
+- Fixed unused variable warnings in HealthKitService
+
+**App Store**
+- App Apple ID: 6747909936
+- Bundle ID: com.charlesstricklin.WellnessCheck
+- Applied for Family Controls entitlement (Health & Fitness category)
+
+#### Known Issues
+- Onboarding reset button not responding (needs investigation)
+
+#### Files Created
+- SplashView.swift
+- HealthKitService.swift
+- PhoneActivityService.swift
+- DashboardViewModel.swift
+
+#### Files Modified
+- WellnessCheckApp.swift (splash, fade-to-black, scene phase handling)
+- MainDashboardView.swift (real data bindings, removed gear icon, removed progress bar)
+- WelcomeView.swift (italic "be" in tagline)
+- Various minor fixes across onboarding views
+
+#### Next Session
+- Fix onboarding reset button
+- Dark mode testing pass
+- TestFlight preparation
+- "I'm OK" Twilio integration
+
+---
+
 ### 2026-01-11 (Evening Session)
 
 **Spanish Localization Complete + Care Circle Enhancements**
