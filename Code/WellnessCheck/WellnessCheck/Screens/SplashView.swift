@@ -101,7 +101,7 @@ struct SplashView: View {
     /// Dark mode: dark blue, Light mode: light blue
     private var backgroundColor: Color {
         colorScheme == .dark
-            ? Color(red: 0.075, green: 0.106, blue: 0.196)
+            ? Color(red: 0.067, green: 0.133, blue: 0.267)
             : Color(red: 0.784, green: 0.902, blue: 0.961)
     }
 

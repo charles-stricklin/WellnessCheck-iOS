@@ -59,11 +59,11 @@ struct WhyNotificationsView: View {
                         VStack(spacing: 12) {
                             Image(systemName: "bubble.left.fill")
                                 .font(.system(size: 40))
-                                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
-                            
+                                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
+
                             Text("\"Are you okay?\"")
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)
@@ -148,7 +148,7 @@ struct WhyNotificationsView: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color(red: 0.784, green: 0.902, blue: 0.961)
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color(red: 0.784, green: 0.902, blue: 0.961)
     }
     
     private var primaryTextColor: Color {
@@ -166,7 +166,7 @@ struct NotificationPurposeRow: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 24))
-                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                 .frame(width: 30)
 
             Text(text)

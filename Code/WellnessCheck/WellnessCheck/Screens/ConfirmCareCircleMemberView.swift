@@ -15,6 +15,7 @@ struct ConfirmCareCircleMemberView: View {
     // MARK: - Properties
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject var viewModel: CareCircleViewModel
 
     let firstName: String
@@ -45,7 +46,7 @@ struct ConfirmCareCircleMemberView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.784, green: 0.902, blue: 0.961)
+                backgroundColor
                     .ignoresSafeArea()
 
                 VStack(spacing: 0) {
@@ -53,10 +54,11 @@ struct ConfirmCareCircleMemberView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "person.crop.circle.fill.badge.checkmark")
                             .font(.system(size: 60))
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
 
                         Text("Add to Care Circle?")
                             .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(primaryTextColor)
 
                         Text("Please confirm their information and relationship")
                             .font(.system(size: 18))
@@ -76,6 +78,7 @@ struct ConfirmCareCircleMemberView: View {
                                 .foregroundColor(.gray)
                             Text("\(firstName) \(lastName)")
                                 .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(primaryTextColor)
                         }
 
                         Divider()
@@ -87,7 +90,7 @@ struct ConfirmCareCircleMemberView: View {
                                 .foregroundColor(.gray)
                             Text(phoneNumber.isEmpty ? "No phone number" : phoneNumber)
                                 .font(.system(size: 20))
-                                .foregroundColor(phoneNumber.isEmpty ? .red : .primary)
+                                .foregroundColor(phoneNumber.isEmpty ? .red : primaryTextColor)
                         }
 
                         if let email = email, !email.isEmpty {
@@ -100,6 +103,7 @@ struct ConfirmCareCircleMemberView: View {
                                     .foregroundColor(.gray)
                                 Text(email)
                                     .font(.system(size: 18))
+                                    .foregroundColor(primaryTextColor)
                             }
                         }
 
@@ -123,12 +127,12 @@ struct ConfirmCareCircleMemberView: View {
                             .pickerStyle(.menu)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(12)
-                            .background(Color(UIColor.systemBackground))
+                            .background(colorScheme == .dark ? Color(white: 0.2) : Color(UIColor.systemBackground))
                             .cornerRadius(8)
                         }
                     }
                     .padding(24)
-                    .background(Color.white)
+                    .background(cardBackground)
                     .cornerRadius(16)
                     .padding(.horizontal, 24)
 
@@ -140,10 +144,10 @@ struct ConfirmCareCircleMemberView: View {
                         Button(action: addMember) {
                             Text("Add to Care Circle")
                                 .font(.system(size: 22, weight: .semibold))
-                                .foregroundColor(.white)
+                                .foregroundColor(colorScheme == .dark ? Color(red: 0.102, green: 0.227, blue: 0.322) : .white)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 70)
-                                .background(phoneNumber.isEmpty ? Color.gray : Color.blue)
+                                .background(phoneNumber.isEmpty ? Color.gray : Color(red: 0.784, green: 0.902, blue: 0.961))
                                 .cornerRadius(16)
                         }
                         .disabled(phoneNumber.isEmpty)
@@ -178,6 +182,20 @@ struct ConfirmCareCircleMemberView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Computed Properties
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color(red: 0.784, green: 0.902, blue: 0.961)
+    }
+
+    private var primaryTextColor: Color {
+        colorScheme == .dark ? Color.white : Color(red: 0.102, green: 0.227, blue: 0.322)
+    }
+
+    private var cardBackground: Color {
+        colorScheme == .dark ? Color(white: 0.15) : Color.white
     }
 
     // MARK: - Methods

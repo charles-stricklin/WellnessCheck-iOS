@@ -101,7 +101,7 @@ struct WelcomeView: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color("#C8E6F5")
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color("#C8E6F5")
     }
     
     private var primaryTextColor: Color {

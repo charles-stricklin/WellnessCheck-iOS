@@ -11,8 +11,9 @@ import UIKit
 
 struct CareCircleListView: View {
     // MARK: - Properties
-    
+
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @StateObject private var viewModel = CareCircleViewModel()
     let onComplete: () -> Void
     
@@ -27,19 +28,20 @@ struct CareCircleListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.784, green: 0.902, blue: 0.961)
+                backgroundColor
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 0) {
                     // Header
                     VStack(spacing: 12) {
                         Image(systemName: "person.2.circle.fill")
                             .font(.system(size: 60))
-                            .foregroundColor(.blue)
-                        
+                            .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
+
                         Text("Your Care Circle")
                             .font(.system(size: 28, weight: .bold))
-                        
+                            .foregroundColor(primaryTextColor)
+
                         Text("\(viewModel.members.count) member\(viewModel.members.count == 1 ? "" : "s")")
                             .font(.system(size: 18))
                             .foregroundColor(.gray)
@@ -51,21 +53,21 @@ struct CareCircleListView: View {
                         // Empty state
                         VStack(spacing: 20) {
                             Spacer()
-                            
+
                             Image(systemName: "person.crop.circle.badge.questionmark")
                                 .font(.system(size: 80))
                                 .foregroundColor(.gray.opacity(0.5))
-                            
+
                             Text("No Care Circle Members Yet")
                                 .font(.system(size: 22, weight: .semibold))
-                                .foregroundColor(.gray)
-                            
+                                .foregroundColor(secondaryTextColor)
+
                             Text("Add trusted people who can help if you need assistance")
                                 .font(.system(size: 18))
                                 .foregroundColor(.gray)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 40)
-                            
+
                             Spacer()
                         }
                     } else {
@@ -78,6 +80,7 @@ struct CareCircleListView: View {
                                         position: index + 1,
                                         isFirst: index == 0,
                                         isLast: index == viewModel.members.count - 1,
+                                        colorScheme: colorScheme,
                                         onMoveUp: { viewModel.moveMemberUp(member) },
                                         onMoveDown: { viewModel.moveMemberDown(member) }
                                     )
@@ -103,13 +106,13 @@ struct CareCircleListView: View {
                                 Text("Add from Contacts")
                                     .font(.system(size: 22, weight: .semibold))
                             }
-                            .foregroundColor(.white)
+                            .foregroundColor(colorScheme == .dark ? Color(red: 0.102, green: 0.227, blue: 0.322) : .white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 70)
-                            .background(Color.blue)
+                            .background(Color(red: 0.784, green: 0.902, blue: 0.961))
                             .cornerRadius(16)
                         }
-                        
+
                         // Manual Add Member button
                         Button(action: {
                             showAddMember = true
@@ -120,17 +123,17 @@ struct CareCircleListView: View {
                                 Text("Add Manually")
                                     .font(.system(size: 22, weight: .semibold))
                             }
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                             .frame(maxWidth: .infinity)
                             .frame(height: 70)
                             .background(Color.clear)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.blue, lineWidth: 2)
+                                    .stroke(Color(red: 0.784, green: 0.902, blue: 0.961), lineWidth: 2)
                             )
                             .cornerRadius(16)
                         }
-                        
+
                         // Continue/Finish button
                         Button(action: {
                             onComplete()
@@ -185,6 +188,20 @@ struct CareCircleListView: View {
             }
         }
     }
+
+    // MARK: - Computed Properties
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color(red: 0.784, green: 0.902, blue: 0.961)
+    }
+
+    private var primaryTextColor: Color {
+        colorScheme == .dark ? Color.white : Color(red: 0.102, green: 0.227, blue: 0.322)
+    }
+
+    private var secondaryTextColor: Color {
+        colorScheme == .dark ? Color.white : Color(red: 0.102, green: 0.227, blue: 0.322)
+    }
 }
 
 // MARK: - Member Row Component
@@ -194,15 +211,18 @@ struct CareCircleMemberRow: View {
     let position: Int
     let isFirst: Bool
     let isLast: Bool
+    let colorScheme: ColorScheme
     let onMoveUp: () -> Void
     let onMoveDown: () -> Void
+
+    private let lightBlue = Color(red: 0.784, green: 0.902, blue: 0.961)
 
     var body: some View {
         HStack(spacing: 12) {
             // Order number
             Text("\(position)")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.blue)
+                .foregroundColor(lightBlue)
                 .frame(width: 36)
 
             // Up/Down arrows
@@ -210,14 +230,14 @@ struct CareCircleMemberRow: View {
                 Button(action: onMoveUp) {
                     Image(systemName: "chevron.up")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(isFirst ? .gray.opacity(0.3) : .blue)
+                        .foregroundColor(isFirst ? .gray.opacity(0.3) : lightBlue)
                 }
                 .disabled(isFirst)
 
                 Button(action: onMoveDown) {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(isLast ? .gray.opacity(0.3) : .blue)
+                        .foregroundColor(isLast ? .gray.opacity(0.3) : lightBlue)
                 }
                 .disabled(isLast)
             }
@@ -233,18 +253,18 @@ struct CareCircleMemberRow: View {
                     .clipShape(Circle())
                     .overlay(
                         Circle()
-                            .stroke(member.isPrimary ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                            .stroke(member.isPrimary ? lightBlue : Color.gray.opacity(0.3), lineWidth: 2)
                     )
             } else {
                 // Fallback to initials
                 ZStack {
                     Circle()
-                        .fill(member.isPrimary ? Color.blue : Color.gray.opacity(0.3))
+                        .fill(member.isPrimary ? lightBlue : Color.gray.opacity(0.3))
                         .frame(width: 50, height: 50)
 
                     Text("\(member.firstName.prefix(1))\(member.lastName.prefix(1))")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(member.isPrimary ? .white : .gray)
+                        .foregroundColor(member.isPrimary ? Color(red: 0.102, green: 0.227, blue: 0.322) : .gray)
                 }
             }
 
@@ -252,14 +272,15 @@ struct CareCircleMemberRow: View {
                 HStack(spacing: 8) {
                     Text(member.fullName)
                         .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(colorScheme == .dark ? .white : Color(red: 0.102, green: 0.227, blue: 0.322))
 
                     if member.isPrimary {
                         Text("PRIMARY")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.blue)
+                            .background(lightBlue)
                             .cornerRadius(4)
                     }
                 }
@@ -284,7 +305,7 @@ struct CareCircleMemberRow: View {
                 .foregroundColor(.gray)
         }
         .padding()
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color(white: 0.15) : Color.white)
         .cornerRadius(12)
     }
 

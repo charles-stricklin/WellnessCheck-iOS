@@ -9,11 +9,23 @@
 import SwiftUI
 
 struct CustomizeMonitoringView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var viewModel = CustomizeMonitoringViewModel()
     let onContinue: () -> Void
-    
+
+    /// Background color - dark blue in dark mode, light blue in light mode
+    private var backgroundColor: Color {
+        colorScheme == .dark
+            ? Color(red: 0.067, green: 0.133, blue: 0.267)
+            : Color(red: 0.784, green: 0.902, blue: 0.961)
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            backgroundColor
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // MARK: - Header
@@ -162,9 +174,8 @@ struct CustomizeMonitoringView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
             .padding(.top, 16)
-            .background(Color(.systemGroupedBackground))
+            }
         }
-        .background(Color(.systemGroupedBackground))
         .animation(.easeInOut(duration: 0.25), value: viewModel.quietHoursEnabled)
     }
 }

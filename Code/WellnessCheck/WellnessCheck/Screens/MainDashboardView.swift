@@ -89,7 +89,17 @@ struct HomeTabView: View {
     /// ViewModel providing real data from HealthKit and Care Circle
     @ObservedObject var viewModel: DashboardViewModel
 
+    /// Track color scheme for dark mode background
+    @Environment(\.colorScheme) private var colorScheme
+
     @State private var showingImOkConfirmation = false
+
+    /// Background color - dark blue in dark mode, system grouped in light mode
+    private var backgroundColor: Color {
+        colorScheme == .dark
+            ? Color(red: 0.067, green: 0.133, blue: 0.267)
+            : Color(.systemGroupedBackground)
+    }
 
     var body: some View {
         NavigationStack {
@@ -180,7 +190,7 @@ struct HomeTabView: View {
                 }
                 .padding(.bottom, 20)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(backgroundColor.ignoresSafeArea())
             .navigationBarHidden(true)
             .task {
                 // Request HealthKit authorization and fetch data on appear

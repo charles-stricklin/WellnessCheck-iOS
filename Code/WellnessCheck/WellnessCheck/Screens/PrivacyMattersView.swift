@@ -88,7 +88,7 @@ struct PrivacyMattersView: View {
     }
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color(red: 0.784, green: 0.902, blue: 0.961)
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color(red: 0.784, green: 0.902, blue: 0.961)
     }
     
     private var primaryTextColor: Color {
@@ -110,7 +110,7 @@ struct PrivacyCard: View {
         HStack(alignment: .top, spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 28))
-                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                 .frame(width: 44, height: 44)
 
             VStack(alignment: .leading, spacing: 8) {

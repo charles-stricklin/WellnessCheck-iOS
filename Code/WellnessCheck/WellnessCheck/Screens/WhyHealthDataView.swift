@@ -34,7 +34,7 @@ struct WhyHealthDataView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "heart.text.square.fill")
                             .font(.system(size: 60))
-                            .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                            .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                         
                         Text("About Your Health Data")
                             .font(.system(size: 34, weight: .bold))
@@ -62,7 +62,7 @@ struct WhyHealthDataView: View {
                         VStack(spacing: 12) {
                             Text("We're looking for changes in YOUR patterns")
                                 .font(.system(size: 22, weight: .semibold))
-                                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                                 .multilineTextAlignment(.center)
                             
                             Text("If you're usually active in the morning but one day there's no movement for hours, that's unusual for you - and we check in.")
@@ -111,7 +111,7 @@ struct WhyHealthDataView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "lock.shield.fill")
                                 .font(.system(size: 28))
-                                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                             
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Your Data Stays Private")
@@ -171,7 +171,7 @@ struct WhyHealthDataView: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color(red: 0.075, green: 0.106, blue: 0.196) : Color(red: 0.784, green: 0.902, blue: 0.961)
+        colorScheme == .dark ? Color(red: 0.067, green: 0.133, blue: 0.267) : Color(red: 0.784, green: 0.902, blue: 0.961)
     }
     
     private var primaryTextColor: Color {
@@ -193,7 +193,7 @@ struct HealthDataRow: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 24))
-                .foregroundColor(Color(red: 0.102, green: 0.227, blue: 0.322))
+                .foregroundColor(Color(red: 0.784, green: 0.902, blue: 0.961))
                 .frame(width: 30)
 
             Text(text)

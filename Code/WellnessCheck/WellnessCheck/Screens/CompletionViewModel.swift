@@ -36,26 +36,29 @@ class CompletionViewModel: ObservableObject {
     
     private func loadCareCircleSummary() {
         let defaults = UserDefaults.standard
-        
+
         // Load Care Circle members from UserDefaults
-        // Assumes Care Circle is stored as array of dictionaries with "name" key
-        if let careCircleData = defaults.array(forKey: "careCircleMembers") as? [[String: Any]] {
-            careCircleCount = careCircleData.count
-            
-            let names = careCircleData.compactMap { $0["name"] as? String }
-            
-            if names.isEmpty {
-                careCircleNames = "No members added"
-            } else if names.count == 1 {
-                careCircleNames = names[0]
-            } else if names.count == 2 {
-                careCircleNames = "\(names[0]) & \(names[1])"
-            } else {
-                careCircleNames = "\(names[0]), \(names[1]) + \(names.count - 2) more"
-            }
-        } else {
+        // Data is stored as JSON-encoded array of CareCircleMember objects
+        guard let data = defaults.data(forKey: "careCircleMembers"),
+              let members = try? JSONDecoder().decode([CareCircleMember].self, from: data) else {
             careCircleCount = 0
             careCircleNames = "No members added"
+            return
+        }
+
+        careCircleCount = members.count
+
+        // Build names string using firstName from each member
+        let names = members.map { $0.firstName }
+
+        if names.isEmpty {
+            careCircleNames = "No members added"
+        } else if names.count == 1 {
+            careCircleNames = names[0]
+        } else if names.count == 2 {
+            careCircleNames = "\(names[0]) & \(names[1])"
+        } else {
+            careCircleNames = "\(names[0]), \(names[1]) + \(names.count - 2) more"
         }
     }
     
@@ -86,11 +89,9 @@ class CompletionViewModel: ObservableObject {
     
     private func loadHomeLocationStatus() {
         let defaults = UserDefaults.standard
-        
-        // Check if home location coordinates are saved
-        let hasLatitude = defaults.object(forKey: "homeLatitude") != nil
-        let hasLongitude = defaults.object(forKey: "homeLongitude") != nil
-        
-        homeLocationSet = hasLatitude && hasLongitude
+
+        // Home location is stored as JSON-encoded HomeLocation object under "homeLocation" key
+        // We just need to check if the data exists - if it does, location was set
+        homeLocationSet = defaults.data(forKey: "homeLocation") != nil
     }
 }

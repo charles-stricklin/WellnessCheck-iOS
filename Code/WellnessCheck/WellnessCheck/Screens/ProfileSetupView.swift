@@ -15,12 +15,16 @@ import Contacts
 struct ProfileSetupView: View {
     // MARK: - Properties
 
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
     @FocusState private var focusedField: Field?
     @State private var showValidationAlert = false
     @State private var showContactPicker = false
+
+    /// Randomly selected illustration - set once when view loads
+    @State private var illustrationName: String = Bool.random() ? "JaneDoe" : "JuanGarcia"
 
     // MARK: - Focus State
 
@@ -31,18 +35,31 @@ struct ProfileSetupView: View {
         case email
     }
 
+    // MARK: - Computed Properties
+
+    /// Background color - dark blue in dark mode, light blue in light mode
+    private var backgroundColor: Color {
+        colorScheme == .dark
+            ? Color(red: 0.067, green: 0.133, blue: 0.267)
+            : Color(red: 0.784, green: 0.902, blue: 0.961)
+    }
+
     // MARK: - Body
 
     var body: some View {
-        ScrollView {
+        ZStack {
+            backgroundColor
+                .ignoresSafeArea()
+
+            ScrollView {
             VStack(spacing: Constants.largeSpacing) {
             // Header
             VStack(spacing: 12) {
-                Image(systemName: "person.circle.fill")
+                // Diverse illustration - randomly shows Jane Doe or Juan Garcia
+                Image(illustrationName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 80, height: 80)
-                    .foregroundStyle(.blue.gradient)
+                    .frame(width: 180, height: 180)
 
                 Text("Set Up Your Profile")
                     .font(.system(size: Constants.headerTextSize, weight: .bold))
@@ -222,7 +239,8 @@ struct ProfileSetupView: View {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
-        }
+            }
+            }
         }
         .contentShape(Rectangle())
         .onTapGesture {

@@ -1,5 +1,172 @@
 # WellnessCheck Session Log
 
+### 2026-01-14 (Evening Session)
+
+**Dark Blue Backgrounds + HealthKit Expansion + Directory Cleanup**
+
+#### What Was Done
+
+**Dark Mode Background Standardization**
+- Changed all dark mode backgrounds from near-black (#131B32) to dark blue (#112244)
+- Updated 13 screens to use consistent `Color(red: 0.067, green: 0.133, blue: 0.267)`
+- Screens updated: WelcomeView, HowItWorksView, PrivacyMattersView, WhyPermissionsView, WhyNotificationsView, WhyHealthDataView, ProfileSetupView, HomeLocationView, CareCircleListView, ConfirmCareCircleMemberView, LanguageSelectionView, SplashView, MainDashboardView, CustomizeMonitoringView
+
+**HealthKit Expansion**
+- Expanded HealthKitService to request additional iPhone-only health metrics:
+  - Active energy burned (calories)
+  - Walking speed (gait changes indicate health issues)
+  - Walking step length (gait pattern changes)
+  - Walking steadiness events (iOS fall risk detection)
+  - Sleep analysis (pattern disruption detection)
+- Added fetch methods for all new data types
+- Added week and month predicates for historical queries
+
+**Profile Setup Illustrations**
+- Added JaneDoe and JuanGarcia illustrations to Profile Setup screen
+- Randomly selects one illustration each time screen loads
+- Set illustration size to 180x180
+
+**CompletionView Bug Fixes**
+- Fixed Care Circle member count showing 0: now properly decodes JSON-encoded CareCircleMember array
+- Fixed Home Location showing "Not Set": now checks correct "homeLocation" key instead of separate lat/long keys
+
+**Directory Cleanup**
+- Identified and deleted duplicate `WellnessCheck/Code/WellnessCheck/` directory
+- Preserved BrandingManager.swift by copying to correct location
+- Added missing `import Combine` to BrandingManager.swift
+- Active project now solely at `Code/WellnessCheck/`
+
+#### Files Modified
+- HealthKitService.swift (major expansion - new metrics)
+- CompletionViewModel.swift (bug fixes for member count and home location)
+- ProfileSetupView.swift (illustration + dark mode background)
+- CustomizeMonitoringView.swift (dark mode background)
+- MainDashboardView.swift (dark mode background)
+- WelcomeView.swift, HowItWorksView.swift, PrivacyMattersView.swift (dark mode)
+- WhyPermissionsView.swift, WhyNotificationsView.swift, WhyHealthDataView.swift (dark mode)
+- HomeLocationView.swift, CareCircleListView.swift, ConfirmCareCircleMemberView.swift (dark mode)
+- LanguageSelectionView.swift, SplashView.swift (dark mode)
+- BrandingManager.swift (added Combine import)
+
+#### Next Session
+- Test full onboarding flow with fresh permissions
+- Verify all dark blue backgrounds display correctly
+- TestFlight preparation
+- "I'm OK" Twilio integration
+
+---
+
+### 2026-01-14 (Afternoon Session)
+
+**Dark Mode Fix + Enterprise Planning + Android Setup**
+
+#### What Was Done
+
+**Dark Mode Treatment**
+- Fixed ConfirmCareCircleMemberView dark mode (copied working version)
+- AddCareCircleMemberView reverted to stable (dark mode deferred)
+- Identified duplicate directory issue: `WellnessCheck/Code/` vs `Code/`
+
+**Contact Picker Crash Fix**
+- Removed CNContactStore.unifiedContact refetch that was freezing on contact selection
+- Reverted to simple pass-through (may have partial contact data, but no crash)
+
+**Enterprise Licensing Planning**
+- Added "Post-Android: Enterprise Licensing" section to TODO.md
+- Created Docs/EnterpriseSchema.md with full Firestore schema:
+  - organizations, organizationAdmins, users (enterprise fields), organizationInvites, auditLogs
+  - Security rules, Cloud Functions pseudocode, admin portal endpoints
+  - Pricing model reference
+
+**BrandingManager Stub**
+- Created Services/BrandingManager.swift for future enterprise custom branding
+- Supports custom logo, colors, app name per organization
+- Adaptive color helpers for dark/light mode
+- Ready to wire up post-Android
+
+**Android Setup**
+- Discussed Android Studio setup on Mac
+- Package name for Android: com.stricklindevelopment.wellnesscheck
+- Waiting on Apple org conversion (24-48 hours) before updating iOS bundle ID
+
+**Apple Developer Account**
+- Charles converting from Individual to Organization (Stricklin Development, LLC)
+- DUNS number submitted, waiting for Apple processing
+- Will update iOS bundle ID to com.stricklindevelopment.wellnesscheck after conversion
+
+#### Known Issues
+- Duplicate project directories need cleanup
+- AddCareCircleMemberView still needs dark mode treatment
+- Contact picker may return partial data (photo/email sometimes missing)
+
+#### Files Created
+- Docs/EnterpriseSchema.md
+- Services/BrandingManager.swift
+
+#### Files Modified
+- TODO.md (enterprise section, date)
+- ContactPicker.swift (removed refetch to fix crash)
+- ConfirmCareCircleMemberView.swift (restored working dark mode version)
+- AddCareCircleMemberView.swift (reverted to stable)
+
+#### Next Session
+- Test contact picker flow
+- Clean up duplicate directory structure
+- AddCareCircleMemberView dark mode (careful this time)
+- Continue TestFlight prep
+
+---
+
+### 2026-01-14 (Early Morning Session)
+
+**Dark Mode Pass + Icon Color Consistency + Contact Picker Fix**
+
+#### What Was Done
+
+**Dark Mode Icon Colors (Light Blue #C8E6F5)**
+- HowItWorksView: ExplanationCard icons now light blue
+- PrivacyMattersView: PrivacyCard icons now light blue
+- WhyNotificationsView: Bubble icon, "Are you okay?" text, checkmark icon now light blue
+- WhyHealthDataView: Heart icon, "We're looking for changes" text, lock icon, all HealthDataRow icons now light blue
+
+**CareCircleListView Dark Mode**
+- Added colorScheme environment variable
+- Background adapts (light blue ↔ dark navy)
+- Header icon now light blue (visible in both modes)
+- Member row cards adapt (white ↔ dark gray)
+- All .blue accents changed to light blue
+- Position numbers, arrows, PRIMARY badge all use light blue
+- CareCircleMemberRow updated with colorScheme parameter
+
+**ConfirmCareCircleMemberView Dark Mode**
+- Full dark mode treatment (background, card, text, buttons)
+- Icon and button colors use light blue
+
+**Contact Picker Fix**
+- CNContactPickerViewController was returning partial contacts
+- Updated ContactPicker.swift to refetch full contact with required keys
+- Now properly populates name, phone, email, and photo
+
+#### Known Issues Resolved
+- Onboarding reset button now working
+
+#### Files Modified
+- HowItWorksView.swift
+- PrivacyMattersView.swift
+- WhyNotificationsView.swift
+- WhyHealthDataView.swift
+- CareCircleListView.swift
+- ConfirmCareCircleMemberView.swift
+- ContactPicker.swift
+
+#### Next Session
+- Diversity in illustrations (ChatGPT/DALL-E)
+- Continue dark mode testing pass
+- TestFlight preparation
+- "I'm OK" Twilio integration
+
+---
+
 ### 2026-01-13 (Evening Session)
 
 **Dashboard Live Data + Splash Screen + Inactivity Fade**

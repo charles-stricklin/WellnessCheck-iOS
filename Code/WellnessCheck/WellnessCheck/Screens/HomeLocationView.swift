@@ -55,7 +55,7 @@ struct HomeLocationView: View {
 
     private var backgroundColor: Color {
         colorScheme == .dark
-            ? Color(red: 0.102, green: 0.227, blue: 0.322)  // Navy
+            ? Color(red: 0.067, green: 0.133, blue: 0.267)  // Dark blue
             : Color(red: 0.784, green: 0.902, blue: 0.961)  // Light blue
     }
 

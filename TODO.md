@@ -1,11 +1,10 @@
 # WellnessCheck Tasks
 
-**Last Updated:** January 13, 2026
+**Last Updated:** January 14, 2026 (Evening)
 
 ---
 
 ## In Progress
-- [ ] Dark mode testing pass
 - [ ] TestFlight preparation
 - [ ] Fix onboarding reset button (not responding)
 
@@ -48,9 +47,29 @@
 - [ ] CGM/glucose monitoring
 - [ ] Geofencing for dementia use case
 
+### Post-Android: Enterprise Licensing
+- [ ] Firestore schema for organizations (see /Docs/EnterpriseSchema.md)
+- [ ] License validation Cloud Function
+- [ ] Enterprise activation flow in onboarding
+- [ ] Admin web portal (wellnesscheck.dev)
+- [ ] Apple Business Manager / VPP integration (iOS)
+- [ ] Managed Google Play setup (Android)
+- [ ] Enterprise-specific features:
+  - [ ] Admin dashboard (resident status overview)
+  - [ ] Bulk onboarding (CSV import)
+  - [ ] Facility staff as default Care Circle
+  - [ ] Custom alert routing
+  - [ ] Audit logs for compliance
+  - [ ] HIPAA BAA option
+
 ---
 
 ## Done
+- [x] Dark mode backgrounds standardized to dark blue (#112244) — 2026-01-14
+- [x] HealthKit expanded (energy, walking speed/length, steadiness, sleep) — 2026-01-14
+- [x] Profile Setup illustrations (JaneDoe/JuanGarcia) — 2026-01-14
+- [x] CompletionView bug fixes (member count, home location status) — 2026-01-14
+- [x] Duplicate directory cleanup — 2026-01-14
 - [x] Dashboard connected to real HealthKit data (steps, floors) — 2026-01-13
 - [x] Care Circle preview shows actual stored members — 2026-01-13
 - [x] Phone pickup proxy via CoreMotion — 2026-01-13
