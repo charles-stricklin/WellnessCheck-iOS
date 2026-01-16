@@ -89,10 +89,16 @@ struct HomeTabView: View {
     /// ViewModel providing real data from HealthKit and Care Circle
     @ObservedObject var viewModel: DashboardViewModel
 
+    /// Service for calling Cloud Functions (SMS via Twilio)
+    @StateObject private var cloudFunctions = CloudFunctionsService()
+
     /// Track color scheme for dark mode background
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var showingImOkConfirmation = false
+    @State private var showingImOkResult = false
+    @State private var imOkResultSuccess = false
+    @State private var imOkResultMessage = ""
 
     /// Background color - dark blue in dark mode, system grouped in light mode
     private var backgroundColor: Color {
@@ -179,10 +185,27 @@ struct HomeTabView: View {
                         .alert("Send \"I'm OK\"?", isPresented: $showingImOkConfirmation) {
                             Button("Cancel", role: .cancel) { }
                             Button("Send") {
-                                // TODO: Actually send the message to Care Circle via Twilio
+                                Task {
+                                    let result = await cloudFunctions.sendImOkMessage(
+                                        userName: userName.isEmpty ? "Your contact" : userName,
+                                        members: viewModel.careCircleViewModel.members
+                                    )
+                                    imOkResultSuccess = result.success
+                                    if result.success {
+                                        imOkResultMessage = "Message sent to \(result.sent) of \(result.total) Care Circle member\(result.total == 1 ? "" : "s")."
+                                    } else {
+                                        imOkResultMessage = result.error ?? "Failed to send message. Please try again."
+                                    }
+                                    showingImOkResult = true
+                                }
                             }
                         } message: {
                             Text("This will notify your Care Circle that you're doing fine.")
+                        }
+                        .alert(imOkResultSuccess ? "Message Sent" : "Message Failed", isPresented: $showingImOkResult) {
+                            Button("OK", role: .cancel) { }
+                        } message: {
+                            Text(imOkResultMessage)
                         }
                     }
 

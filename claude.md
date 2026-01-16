@@ -1,7 +1,7 @@
 **On every session start:**
 1. Read TODO.md and SESSION_LOG.md
 2. Tell Charles what was last worked on and what's next
-3. Ask if he wants to continue or pivot
+3. Ask for his direction
 
 **On every session end:**
 1. Update TODO.md and SESSION_LOG.md

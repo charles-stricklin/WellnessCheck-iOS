@@ -3,9 +3,12 @@
 //  WellnessCheck
 //
 //  Created: v0.1.0 (2025-12-26)
-//  Last Modified: v0.3.0 (2026-01-13)
+//  Last Modified: v0.4.0 (2026-01-15)
 //
 //  By Charles Stricklin, Stricklin Development, LLC
+//
+//  UPDATE 2026-01-15: Added Firebase initialization for backend services.
+//  Firebase Auth, Firestore, and Cloud Messaging configured via AppDelegate.
 //
 //  UPDATE 2026-01-13: Added splash screen that displays briefly before
 //  showing the main dashboard (only after onboarding is complete).
@@ -14,10 +17,32 @@
 //
 
 import SwiftUI
+import FirebaseCore
+import FirebaseAuth
+
+// MARK: - App Delegate
+
+/// AppDelegate handles Firebase initialization and any other setup that needs
+/// to happen before the SwiftUI lifecycle kicks in. Firebase must be configured
+/// early in the app lifecycle before any other Firebase services are used.
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        // Initialize Firebase services
+        // This must happen before any Firebase Auth, Firestore, or other calls
+        FirebaseApp.configure()
+        return true
+    }
+}
 
 @main
 struct WellnessCheckApp: App {
     // MARK: - Properties
+
+    /// Connect the AppDelegate to handle Firebase initialization
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     @Environment(\.scenePhase) private var scenePhase
 
@@ -29,6 +54,9 @@ struct WellnessCheckApp: App {
 
     /// Controls whether the splash screen is showing (post-onboarding launches only)
     @State private var showingSplash = true
+
+    /// Tracks whether user is signed in to Firebase
+    @State private var isSignedIn = false
 
     /// Controls the fade-to-black overlay when app backgrounds or is inactive
     @State private var isObscured = false
@@ -46,16 +74,26 @@ struct WellnessCheckApp: App {
             ZStack {
                 Group {
                     if hasCompletedOnboarding {
-                        // Post-onboarding: show splash briefly, then dashboard
-                        if showingSplash {
-                            SplashView {
-                                // Splash duration complete — transition to dashboard
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showingSplash = false
+                        // Post-onboarding: check authentication
+                        if isSignedIn {
+                            // Signed in: show splash briefly, then dashboard
+                            if showingSplash {
+                                SplashView {
+                                    // Splash duration complete — transition to dashboard
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showingSplash = false
+                                    }
                                 }
+                            } else {
+                                MainDashboardView()
                             }
                         } else {
-                            MainDashboardView()
+                            // Not signed in: show auth screen
+                            AuthView {
+                                // User authenticated — proceed to dashboard
+                                isSignedIn = true
+                                showingSplash = false
+                            }
                         }
                     } else {
                         // Show onboarding flow for new users
@@ -93,6 +131,8 @@ struct WellnessCheckApp: App {
             }
             .onAppear {
                 startInactivityTimer()
+                // Check if user is already signed in from a previous session
+                isSignedIn = Auth.auth().currentUser != nil
             }
             .onChange(of: scenePhase) { oldPhase, newPhase in
                 switch newPhase {

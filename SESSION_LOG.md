@@ -1,5 +1,85 @@
 # WellnessCheck Session Log
 
+### 2026-01-15 (Morning Session)
+
+**Firebase Backend + Auth UI + Twilio Setup**
+
+#### What Was Done
+
+**Firebase Integration**
+- Added GoogleService-Info.plist to project
+- Added Firebase SDK via SPM (FirebaseCore, FirebaseAuth, FirebaseFirestore, FirebaseFunctions)
+- Created AppDelegate for Firebase initialization in WellnessCheckApp.swift
+- Fixed FirebaseAuth.User naming conflict with local User type
+
+**New Services Created**
+- AuthService.swift: Full authentication service with email/password and Sign in with Apple support
+  - Sign up, sign in, sign out, password reset, account deletion
+  - Auth state listener for session persistence
+  - Apple Sign-In nonce generation and credential handling
+- FirestoreService.swift: Cloud sync service for user data
+  - User profile CRUD (name, home location, silence threshold)
+  - Care Circle member sync with sort order
+  - Real-time listeners for live updates
+  - Batch operations for atomic syncs
+
+**Auth UI**
+- Created AuthView.swift: Senior-friendly authentication screen
+  - Email/password sign in and sign up forms
+  - Sign in with Apple button
+  - Password reset flow via sheet
+  - Follows existing design patterns (60pt touch targets, dark mode support)
+- Wired auth flow into WellnessCheckApp (onboarding → auth → dashboard)
+
+**Twilio Account Setup**
+- Created Twilio account (Pay-As-You-Go, Healthcare category)
+- Purchased San Antonio area code number
+- Credentials stored in Firebase Secret Manager (not in repo)
+
+#### Files Created
+- Services/AuthService.swift
+- Services/FirestoreService.swift
+- Screens/AuthView.swift
+
+#### Files Modified
+- WellnessCheckApp.swift (Firebase init, auth flow)
+
+#### Continued (11:00 AM)
+
+**Auth Flow Tested**
+- Enabled Email/Password in Firebase Console
+- Auth screen working on device
+- Added password visibility toggle (eye icon)
+- Added "Passwords don't match" validation
+- Added "At least 6 characters" hint
+
+**Cloud Functions Created**
+- Installed Firebase CLI and Twilio SDK
+- Created three Cloud Functions in `functions/index.js`:
+  - `sendImOkMessage`: User's "I'm OK" button
+  - `sendAlert`: System alerts (inactivity, falls, missed check-ins)
+  - `sendInvitation`: Care Circle member invites
+- Functions use Firebase Secrets for Twilio credentials
+
+#### Continued (2:30 PM)
+
+**Cloud Functions Deployed**
+- Upgraded Firebase to Blaze plan
+- Set Twilio secrets (Account SID, Auth Token, Phone Number)
+- Deployed three Cloud Functions successfully
+
+**iOS App Wired to Cloud Functions**
+- Created CloudFunctionsService.swift to call Firebase Functions
+- Wired "I'm OK" button to actually send SMS via Twilio
+- Added success/failure alerts after sending
+
+#### Next Session
+- Test "I'm OK" button end-to-end (will send real SMS!)
+- Migrate Care Circle from UserDefaults to Firestore
+- A2P 10DLC registration (before TestFlight)
+
+---
+
 ### 2026-01-14 (Evening Session)
 
 **Dark Blue Backgrounds + HealthKit Expansion + Directory Cleanup**
