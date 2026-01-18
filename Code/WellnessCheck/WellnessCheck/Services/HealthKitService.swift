@@ -515,4 +515,135 @@ class HealthKitService: ObservableObject {
             options: .strictStartDate
         )
     }
+
+    // MARK: - Historical Data (for Activity Tab)
+
+    /// Fetch daily step totals for the last N days
+    /// Returns an array of (date, stepCount) tuples, most recent first
+    func fetchDailySteps(forLastDays days: Int) async -> [(date: Date, steps: Int)] {
+        guard let healthStore = healthStore,
+              let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            return []
+        }
+
+        let calendar = Calendar.current
+        let now = Date()
+        var results: [(date: Date, steps: Int)] = []
+
+        // Fetch data for each day
+        for dayOffset in 0..<days {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else { continue }
+
+            let startOfDay = calendar.startOfDay(for: date)
+            guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { continue }
+
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: endOfDay,
+                options: .strictStartDate
+            )
+
+            let steps = await withCheckedContinuation { continuation in
+                let query = HKStatisticsQuery(
+                    quantityType: stepType,
+                    quantitySamplePredicate: predicate,
+                    options: .cumulativeSum
+                ) { _, result, _ in
+                    let count = result?.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
+                    continuation.resume(returning: Int(count))
+                }
+                healthStore.execute(query)
+            }
+
+            results.append((date: startOfDay, steps: steps))
+        }
+
+        return results
+    }
+
+    /// Fetch daily floor totals for the last N days
+    /// Returns an array of (date, floors) tuples, most recent first
+    func fetchDailyFloors(forLastDays days: Int) async -> [(date: Date, floors: Int)] {
+        guard let healthStore = healthStore,
+              let flightsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed) else {
+            return []
+        }
+
+        let calendar = Calendar.current
+        let now = Date()
+        var results: [(date: Date, floors: Int)] = []
+
+        // Fetch data for each day
+        for dayOffset in 0..<days {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else { continue }
+
+            let startOfDay = calendar.startOfDay(for: date)
+            guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { continue }
+
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: endOfDay,
+                options: .strictStartDate
+            )
+
+            let floors = await withCheckedContinuation { continuation in
+                let query = HKStatisticsQuery(
+                    quantityType: flightsType,
+                    quantitySamplePredicate: predicate,
+                    options: .cumulativeSum
+                ) { _, result, _ in
+                    let count = result?.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
+                    continuation.resume(returning: Int(count))
+                }
+                healthStore.execute(query)
+            }
+
+            results.append((date: startOfDay, floors: floors))
+        }
+
+        return results
+    }
+
+    /// Fetch daily active energy totals for the last N days
+    /// Returns an array of (date, calories) tuples, most recent first
+    func fetchDailyEnergy(forLastDays days: Int) async -> [(date: Date, calories: Int)] {
+        guard let healthStore = healthStore,
+              let energyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            return []
+        }
+
+        let calendar = Calendar.current
+        let now = Date()
+        var results: [(date: Date, calories: Int)] = []
+
+        // Fetch data for each day
+        for dayOffset in 0..<days {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else { continue }
+
+            let startOfDay = calendar.startOfDay(for: date)
+            guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { continue }
+
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: endOfDay,
+                options: .strictStartDate
+            )
+
+            let calories = await withCheckedContinuation { continuation in
+                let query = HKStatisticsQuery(
+                    quantityType: energyType,
+                    quantitySamplePredicate: predicate,
+                    options: .cumulativeSum
+                ) { _, result, _ in
+                    let count = result?.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
+                    continuation.resume(returning: Int(count))
+                }
+                healthStore.execute(query)
+            }
+
+            results.append((date: startOfDay, calories: calories))
+        }
+
+        return results
+    }
 }

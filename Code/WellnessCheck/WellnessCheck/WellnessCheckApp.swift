@@ -3,9 +3,12 @@
 //  WellnessCheck
 //
 //  Created: v0.1.0 (2025-12-26)
-//  Last Modified: v0.4.0 (2026-01-15)
+//  Last Modified: v0.6.0 (2026-01-17)
 //
 //  By Charles Stricklin, Stricklin Development, LLC
+//
+//  UPDATE 2026-01-17: Added fall detection lifecycle management.
+//  FallDetectionService starts/stops based on app active state.
 //
 //  UPDATE 2026-01-15: Added Firebase initialization for backend services.
 //  Firebase Auth, Firestore, and Cloud Messaging configured via AppDelegate.
@@ -139,10 +142,21 @@ struct WellnessCheckApp: App {
                 case .active:
                     // App became active — fade in from black and restart timer
                     wakeScreen()
+                    // Start fall detection when app is active
+                    FallDetectionService.shared.startMonitoring()
+                    // Start battery monitoring
+                    BatteryService.shared.startMonitoring()
+                    // Start negative space (inactivity) monitoring
+                    NegativeSpaceService.shared.startMonitoring()
+                    // Record that app was opened (activity signal)
+                    NegativeSpaceService.shared.recordActivity(.appOpen)
                 case .inactive, .background:
                     // App going to background or inactive — fade to black immediately
                     inactivityTimer?.invalidate()
                     isObscured = true
+                    // Stop fall detection when app is not active
+                    // (Note: for true background monitoring, would need Background Modes)
+                    FallDetectionService.shared.stopMonitoring()
                 @unknown default:
                     break
                 }

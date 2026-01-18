@@ -289,6 +289,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheck;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WellnessCheck monitors your activity patterns and fall detection to watch for signs you might need help. This data stays on your device and is only used to alert your Care Circle if something seems wrong.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "WellnessCheck uses your location to set your home address.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "WellnessCheck uses motion data to detect phone activity as part of your daily wellness monitoring. This helps alert your Care Circle if something seems wrong.";
@@ -326,6 +327,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheck;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WellnessCheck monitors your activity patterns and fall detection to watch for signs you might need help. This data stays on your device and is only used to alert your Care Circle if something seems wrong.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "WellnessCheck uses your location to set your home address.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "WellnessCheck uses motion data to detect phone activity as part of your daily wellness monitoring. This helps alert your Care Circle if something seems wrong.";

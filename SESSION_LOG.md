@@ -1,5 +1,192 @@
 # WellnessCheck Session Log
 
+### 2026-01-18 (Late Night Session)
+
+**TestFlight Prep + Full Audit + App Store Connect Setup**
+
+#### What Was Done
+
+**App Store Connect Metadata**
+- Entered app description, keywords, support URL, marketing URL
+- Created privacy policy (hosted at wellnesscheck.dev/privacy-policy)
+- Completed App Privacy questionnaire (data collection disclosures)
+- Set categories: Health & Fitness (primary), Lifestyle (secondary)
+- Set age rating (4+)
+- Set copyright: © 2026 Stricklin Development, LLC
+
+**Swift 6 Concurrency Fixes**
+- Fixed NegativeSpaceService.swift:141 — `[weak self]` capture in Timer + Task
+- Fixed FallDetectionService.swift:307 — countdown timer Task capture
+- Fixed FallDetectionService.swift:374 — replaced timer parameter capture with stored `alertSoundTimer` property (Timer isn't Sendable)
+
+**Full Project Audit**
+Conducted comprehensive audit of what's built vs what's actually working end-to-end:
+
+**CRITICAL GAPS IDENTIFIED:**
+1. **Account deletion UI** — AuthService.deleteAccount() exists, no button in Settings
+2. **Inactivity → SMS not wired** — NegativeSpaceService posts .inactivityAlertTriggered, nothing listens
+3. **Pattern deviation → SMS not wired** — PatternLearningService posts .patternDeviationDetected, nothing listens
+4. **No UNUserNotificationCenterDelegate** — notification taps do nothing
+5. **Background monitoring doesn't exist** — services only run when app is in foreground
+6. **Fall alert sound file** — code loads "fall_alert_sound.mp3", may not exist
+7. **Terms of Service page** — About screen links to wellnesscheck.dev/terms, needs creation
+
+**Documentation Updated**
+- TODO.md restructured with "BLOCKERS FOR TESTFLIGHT" section at top
+- README.md updated to v0.6.0 with current feature status
+- This SESSION_LOG.md entry
+
+#### Files Modified
+- Services/NegativeSpaceService.swift (Swift 6 fix)
+- Services/FallDetectionService.swift (Swift 6 fixes, added alertSoundTimer property)
+- TODO.md (comprehensive restructure)
+- README.md (v0.6.0 update)
+- SESSION_LOG.md (this entry)
+
+#### What's NOT Done (Honest List)
+| Feature | Status |
+|---------|--------|
+| Fall detection → SMS | ✓ Works (via FallAlertView) |
+| Inactivity → SMS | ✗ Not wired |
+| Pattern deviation → SMS | ✗ Not wired |
+| Account deletion | ✗ No UI |
+| Notification actions | ✗ Not implemented |
+| Background monitoring | ✗ Not implemented |
+| Crashlytics | ✗ Not added |
+| Terms of Service page | ✗ Not created |
+
+#### Next Session (Pick Up Here)
+1. Account deletion button in Settings (App Store requirement)
+2. Wire inactivity alert to send SMS
+3. Wire pattern deviation to send SMS
+4. Add UNUserNotificationCenterDelegate for notification tap handling
+5. Add Crashlytics
+6. Verify/fix fall alert sound file
+7. Create Terms of Service page
+8. Device testing
+
+---
+
+### 2026-01-17 (Evening Session)
+
+**Main App Tabs Complete + Fall Detection**
+
+#### What Was Done
+
+**Fall Detection (CoreMotion)**
+- Created FallDetectionService.swift - monitors accelerometer at 50Hz
+- Detection algorithm: high-g impact (>2.5g) followed by 3 seconds of stillness
+- FallAlertView.swift - full-screen "Did You Fall?" overlay with 60-second countdown
+- Large "I'm OK" button (100pt height) for senior accessibility
+- Countdown color transitions: green → yellow → red
+- Plays alert sound + haptic feedback when fall detected
+- If no response, automatically sends fall alert to Care Circle via Twilio
+- Integrated with app lifecycle (starts on active, stops on background)
+- Falls alert overlay applied to MainDashboardView
+
+**Core Safety Monitoring Suite**
+- BatteryService.swift - tracks battery level/state, history, detects if phone likely died
+- NegativeSpaceService.swift - core inactivity monitoring:
+  - Tracks last activity timestamp
+  - Compares against user's silence threshold (2-12 hours configurable)
+  - Respects quiet hours / Do Not Disturb
+  - Sends check-in notification at 75% of threshold
+  - Alerts Care Circle when threshold exceeded
+  - Accounts for dead battery context
+- PatternLearningService.swift - learns user behavior during 14-day learning period:
+  - Records hourly activity patterns (steps, events)
+  - Tracks weekday vs weekend differences
+  - Detects deviations from baseline after learning period
+  - Considers time-of-day context and night owl mode
+- Silence threshold slider added to Monitoring Settings (2-12 hours, 30-min increments)
+
+**Activity Tab** (was placeholder)
+- Full weekly/monthly activity history view
+- Period selector (Week/Month toggle)
+- Summary card showing total steps, floors, calories for period
+- Daily average calculation
+- Daily breakdown with date, step count, floors, calories
+- Visual progress bars showing relative activity level per day
+- Pull-to-refresh support
+- Added HealthKitService methods: `fetchDailySteps()`, `fetchDailyFloors()`, `fetchDailyEnergy()` for historical data
+
+**Care Circle Tab** (was placeholder)
+- Full member management for post-onboarding use
+- Member list with avatars, position numbers, reorder arrows
+- Add from Contacts button with ContactPicker flow
+- Add Manually button for manual entry
+- Edit member sheet (phone, email, relationship)
+- Remove member with confirmation
+- Invitation status badges (Pending, Invited, Connected, Declined)
+- Empty state with helpful prompt
+
+**Settings Tab** (was basic structure only)
+- **Profile Settings**: Edit name, email, phone with save confirmation
+- **Notification Settings**: Enable/disable notifications, Quiet Hours with time pickers
+- **Monitoring Settings**: Fall detection, inactivity alerts, night owl mode, quiet hours toggles
+- **Home Location Settings**: View current location, update to current GPS location
+- **Help & FAQ**: Expandable FAQ sections covering how it works, Care Circle, learning period, privacy, medical disclaimer
+- **About**: App version, developer info, legal links (Privacy Policy, Terms of Service)
+- Sign out button (visible when signed in)
+- Reset Onboarding button (DEBUG builds only)
+
+#### Files Modified
+- MainDashboardView.swift (major expansion - ~1200 lines added for all tab implementations + fall overlay)
+- HealthKitService.swift (added historical data fetch methods)
+- WellnessCheckApp.swift (fall detection lifecycle management)
+
+#### Files Created
+- Services/FallDetectionService.swift (CoreMotion-based fall detection)
+- Screens/FallAlertView.swift (full-screen fall alert with countdown)
+
+#### Technical Notes
+- All tabs follow existing design system (dark blue background in dark mode, light blue accent color)
+- 60pt touch targets maintained for senior accessibility
+- Settings views use standard iOS Form/List patterns for familiarity
+- Monitoring settings reuse CustomizeMonitoringViewModel for consistency with onboarding
+
+#### Next Session
+- Test all tabs on device
+- Build verification
+- TestFlight preparation
+
+---
+
+### 2026-01-17
+
+**Care Circle Firestore Migration**
+
+#### What Was Done
+
+**CareCircleViewModel Firestore Integration**
+- Updated CareCircleViewModel to sync with Firestore when user is signed in
+- Dual-storage approach: UserDefaults during onboarding, Firestore after auth
+- Automatic migration of existing UserDefaults data to Firestore on first sign-in
+- Real-time Firestore listener for sync across devices
+- imageData stays local (too large for Firestore, contact photos stay in UserDefaults)
+
+**Technical Implementation**
+- Added FirebaseAuth import for auth state listening
+- Auth state listener triggers migration on sign-in
+- Combine subscriptions to FirestoreService for real-time updates
+- Merge logic preserves local imageData when receiving Firestore updates
+- All CRUD operations now sync to both UserDefaults and Firestore when signed in
+
+**A2P 10DLC Status**
+- Business SID approved: BU7b2278b8813e11785f91f60742cc03f4
+- SMS sending should now work without carrier filtering errors (30794/30795)
+
+#### Files Modified
+- ViewModels/CareCircleViewModel.swift (major rewrite for Firestore integration)
+- TODO.md (updated task status)
+- SESSION_LOG.md (this entry)
+
+#### Next Session
+- TestFlight preparation
+- Test Care Circle sync end-to-end (add member → check Firebase Console → verify sync)
+
+---
+
 ### 2026-01-15 (Morning Session)
 
 **Firebase Backend + Auth UI + Twilio Setup**
@@ -73,10 +260,27 @@
 - Wired "I'm OK" button to actually send SMS via Twilio
 - Added success/failure alerts after sending
 
+#### Continued (9:45 PM)
+
+**"I'm OK" Button Tested**
+- Fixed Twilio phone number secret (was corrupted)
+- Successfully sent SMS to Sharon and Tony
+- Button works end-to-end
+
+**A2P 10DLC Registration Started**
+- Registered brand with Twilio ($4.50 fee)
+- Brand SID: BN04e0e613eec991610f9502b71e0d32b1
+- Awaiting carrier approval (error codes 30794/30795 are normal during pending status)
+
+**GitHub Commit**
+- Pushed v0.4.0 to GitHub
+- Removed credentials from SESSION_LOG.md (GitHub secret scanning caught it)
+- Configured noreply email for commits
+
 #### Next Session
-- Test "I'm OK" button end-to-end (will send real SMS!)
+- Check A2P registration status
 - Migrate Care Circle from UserDefaults to Firestore
-- A2P 10DLC registration (before TestFlight)
+- TestFlight preparation
 
 ---
 

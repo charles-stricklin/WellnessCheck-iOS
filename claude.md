@@ -12,8 +12,26 @@
 
 # WellnessCheck - Project Context
 
-**Last Updated**: January 10, 2026  
+**Last Updated**: January 18, 2026
+**Current Version**: v0.6.0
 **Developer**: Charles W. Stricklin
+
+---
+
+## CURRENT STATUS: Pre-TestFlight
+
+**Build Status:** ✓ Compiles (Swift 6 clean)
+
+**TestFlight Blockers (must complete before upload):**
+1. Account deletion UI (App Store requirement)
+2. Wire inactivity alert → SMS
+3. Wire pattern deviation → SMS
+4. Add UNUserNotificationCenterDelegate
+5. Add Crashlytics
+6. Verify fall alert sound file
+7. Create Terms of Service page
+
+See TODO.md "BLOCKERS FOR TESTFLIGHT" section for full details.
 
 ---
 
@@ -27,19 +45,45 @@ WellnessCheck is a safety monitoring iOS app designed to help solo dwellers stay
 
 ## v1.0 Features
 
-- Fall detection
-- Step count accumulation
-- Phone movement proof-of-life
-- Flights of stairs climbed
-- Battery level (context for negative space gaps)
-- Home awareness (user-defined at onboarding)
-- Learned pattern deviation
-- Negative space detection
-- Wellness concern detection (pattern clusters)
-- Care Circle management
-- Do Not Disturb scheduling
+### Implemented ✓
+- Fall detection (CoreMotion, wired to SMS)
+- Step count monitoring (HealthKit)
+- Phone movement proof-of-life (CoreMotion)
+- Flights of stairs climbed (HealthKit)
+- Battery level tracking (dead battery detection)
+- Home awareness (user-defined)
+- Learned pattern deviation (14-day learning)
+- Negative space detection (inactivity monitoring)
+- Silence threshold (2-12 hours configurable)
+- Do Not Disturb / Quiet Hours
+- Care Circle management with SMS invitations
+- Firebase Auth + Firestore sync
+- Full dashboard (4 tabs)
+- Spanish localization
 
-**Pending API Research:** Screen unlock data
+### Built but NOT wired to SMS
+- Inactivity threshold exceeded → alert
+- Pattern deviation detected → alert
+
+### Not Implemented
+- Background monitoring (services stop when app closes)
+- Notification tap actions
+- Account deletion UI
+- Push notifications (FCM)
+
+---
+
+## Key Services
+
+| Service | File | Status |
+|---------|------|--------|
+| Fall Detection | FallDetectionService.swift | ✓ Works, sends SMS |
+| Inactivity | NegativeSpaceService.swift | Built, NOT wired to SMS |
+| Pattern Learning | PatternLearningService.swift | Built, NOT wired to SMS |
+| Battery | BatteryService.swift | ✓ Works |
+| HealthKit | HealthKitService.swift | ✓ Works |
+| SMS | CloudFunctionsService.swift | ✓ Works |
+| Auth | AuthService.swift | ✓ Works (has deleteAccount, no UI) |
 
 ---
 
@@ -80,12 +124,12 @@ Care Circle companion app. Planned but not part of v1. Build Care Circle managem
 ## Development Environment
 
 - **Project Root:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck-iOS/
-- **Xcode Project:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck/Code/WellnessCheck-iOS/
+- **Xcode Project:** ~/Documents/Development/iOS/MyiOSProjects/WellnessCheck-iOS/Code/WellnessCheck/
 - **GitHub:** github.com/charles-stricklin/WellnessCheck-iOS
 
 ### Backend
-- **Firebase:** Auth, Firestore, Cloud Functions, Cloud Messaging
-- **Twilio:** SMS alerts and invitations
+- **Firebase:** Auth, Firestore, Cloud Functions
+- **Twilio:** SMS alerts and invitations (A2P 10DLC approved)
 
 ---
 

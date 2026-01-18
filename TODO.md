@@ -1,43 +1,51 @@
 # WellnessCheck Tasks
 
-**Last Updated:** January 14, 2026 (Evening)
+**Last Updated:** January 18, 2026
+
+---
+
+## BLOCKERS FOR TESTFLIGHT (Must Complete First)
+
+### Critical (App Store Rejection Without These)
+- [ ] **Account deletion UI** — Method exists in AuthService, no UI in Settings
+- [ ] Add Crashlytics (Firebase) — for crash reporting
+
+### Core Features Not Wired End-to-End
+- [ ] **Inactivity alert → SMS** — NegativeSpaceService posts notification, nothing sends SMS
+- [ ] **Pattern deviation → SMS** — PatternLearningService posts notification, nothing sends SMS
+- [ ] **Notification tap actions** — No UNUserNotificationCenterDelegate, tapping notifications does nothing
+
+### Infrastructure
+- [ ] Verify fall alert sound file exists (code loads "fall_alert_sound.mp3")
+- [ ] Create Terms of Service page (About screen links to wellnesscheck.dev/terms)
 
 ---
 
 ## In Progress
-- [ ] TestFlight preparation
-- [ ] Fix onboarding reset button (not responding)
+- [ ] TestFlight preparation (blocked by above items)
 
 ---
 
 ## Up Next
-- [ ] Implement "I'm OK" message sending via Twilio
-- [ ] Fall detection integration (HealthKit)
+- [ ] Background monitoring (BGTaskScheduler) — services only run in foreground currently
+- [ ] Push notification system (FCM) — only local notifications exist
 - [ ] Family Controls entitlement (pending Apple approval) — applied 2026-01-13
+
+---
+
+## Additional Proof-of-Life Signals (v1.1 candidates)
+- [ ] Sleep analysis from HealthKit (waking up daily = strong signal)
+- [ ] Charging events (phone plugged in = alive)
+- [ ] Significant location changes (user is out and about)
+- [ ] Walking steadiness (already have HealthKit access, not analyzing)
+- [ ] Resting vs active energy patterns
 
 ---
 
 ## Backlog
 
 ### Core Safety
-- [ ] Battery level tracking (for negative space context)
-- [ ] Negative space detection logic
-- [ ] Learned pattern deviation
 - [ ] Wellness concern detection (pattern clusters)
-- [ ] Do Not Disturb scheduling
-- [ ] Silence threshold slider (2-12 hours)
-
-### Dashboard Tabs
-- [ ] Activity tab - history view
-- [ ] Care Circle tab - full management
-- [ ] Settings tab - full implementation
-
-### Infrastructure
-- [ ] Firebase Auth setup
-- [ ] Firestore data structure
-- [ ] Cloud Functions for alert processing
-- [ ] Push notification system
-- [ ] Twilio SMS integration (production)
 
 ### Research
 - [ ] Screen unlock data API feasibility
@@ -65,6 +73,25 @@
 ---
 
 ## Done
+- [x] App Store Connect metadata entered (description, keywords, privacy policy) — 2026-01-18
+- [x] Swift 6 concurrency fixes (Timer + Task captures) — 2026-01-18
+- [x] README updated to v0.6.0 — 2026-01-18
+- [x] Learned pattern deviation detection (PatternLearningService) — 2026-01-17
+- [x] Negative space detection (NegativeSpaceService, inactivity monitoring) — 2026-01-17
+- [x] Do Not Disturb / Quiet Hours (integrated with monitoring) — 2026-01-17
+- [x] Silence threshold slider (2-12 hours) in Settings — 2026-01-17
+- [x] Battery level tracking (BatteryService, dead battery detection) — 2026-01-17
+- [x] Fall detection via CoreMotion (impact + stillness algorithm, 60s countdown, Care Circle alert) — 2026-01-17
+- [x] Activity tab - weekly/monthly history with daily breakdown — 2026-01-17
+- [x] Care Circle tab - full member management (add/edit/reorder/delete) — 2026-01-17
+- [x] Settings tab - Profile, Notifications, Monitoring, Home Location, Help, About — 2026-01-17
+- [x] Care Circle syncs to Firestore (with UserDefaults fallback for onboarding) — 2026-01-17
+- [x] A2P 10DLC business registration approved — 2026-01-17
+- [x] Firebase Auth UI (sign in/sign up, Sign in with Apple) — 2026-01-15
+- [x] Firestore data structure for users and Care Circle — 2026-01-15
+- [x] Cloud Functions for SMS (sendImOkMessage, sendAlert, sendInvitation) — 2026-01-15
+- [x] Twilio SMS integration (production) — "I'm OK" button working — 2026-01-15
+- [x] A2P 10DLC brand registration submitted — 2026-01-15
 - [x] Dark mode backgrounds standardized to dark blue (#112244) — 2026-01-14
 - [x] HealthKit expanded (energy, walking speed/length, steadiness, sleep) — 2026-01-14
 - [x] Profile Setup illustrations (JaneDoe/JuanGarcia) — 2026-01-14

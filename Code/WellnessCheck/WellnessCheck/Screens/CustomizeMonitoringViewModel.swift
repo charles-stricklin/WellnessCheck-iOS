@@ -21,6 +21,10 @@ class CustomizeMonitoringViewModel: ObservableObject {
     @Published var quietHoursEnabled: Bool = false
     @Published var quietHoursStart: Date = Calendar.current.date(from: DateComponents(hour: 22, minute: 0)) ?? Date()
     @Published var quietHoursEnd: Date = Calendar.current.date(from: DateComponents(hour: 7, minute: 0)) ?? Date()
+
+    /// Silence threshold in hours (2-12) — how long without activity before alerting
+    /// Default is 4 hours. Seniors who are less active may want higher values.
+    @Published var silenceThresholdHours: Double = 4.0
     
     // MARK: - UserDefaults Keys
     
@@ -31,6 +35,7 @@ class CustomizeMonitoringViewModel: ObservableObject {
         static let quietHoursEnabled = "monitoring_quietHoursEnabled"
         static let quietHoursStart = "monitoring_quietHoursStart"
         static let quietHoursEnd = "monitoring_quietHoursEnd"
+        static let silenceThreshold = "monitoring_silenceThreshold"
     }
     
     // MARK: - Initialization
@@ -44,14 +49,15 @@ class CustomizeMonitoringViewModel: ObservableObject {
     /// Save current settings to UserDefaults
     func saveSettings() {
         let defaults = UserDefaults.standard
-        
+
         defaults.set(fallDetectionEnabled, forKey: Keys.fallDetection)
         defaults.set(inactivityAlertsEnabled, forKey: Keys.inactivityAlerts)
         defaults.set(nightOwlModeEnabled, forKey: Keys.nightOwlMode)
         defaults.set(quietHoursEnabled, forKey: Keys.quietHoursEnabled)
         defaults.set(quietHoursStart.timeIntervalSince1970, forKey: Keys.quietHoursStart)
         defaults.set(quietHoursEnd.timeIntervalSince1970, forKey: Keys.quietHoursEnd)
-        
+        defaults.set(silenceThresholdHours, forKey: Keys.silenceThreshold)
+
         print("✅ Monitoring settings saved")
     }
     
@@ -61,7 +67,8 @@ class CustomizeMonitoringViewModel: ObservableObject {
         inactivityAlertsEnabled = true
         nightOwlModeEnabled = false
         quietHoursEnabled = false
-        
+        silenceThresholdHours = 4.0
+
         saveSettings()
         print("✅ Default monitoring settings applied")
     }
@@ -71,22 +78,26 @@ class CustomizeMonitoringViewModel: ObservableObject {
     /// Load settings from UserDefaults (if previously saved)
     private func loadSettings() {
         let defaults = UserDefaults.standard
-        
+
         // Only load if settings have been saved before
         if defaults.object(forKey: Keys.fallDetection) != nil {
             fallDetectionEnabled = defaults.bool(forKey: Keys.fallDetection)
             inactivityAlertsEnabled = defaults.bool(forKey: Keys.inactivityAlerts)
             nightOwlModeEnabled = defaults.bool(forKey: Keys.nightOwlMode)
             quietHoursEnabled = defaults.bool(forKey: Keys.quietHoursEnabled)
-            
+
             if let startInterval = defaults.object(forKey: Keys.quietHoursStart) as? TimeInterval {
                 quietHoursStart = Date(timeIntervalSince1970: startInterval)
             }
-            
+
             if let endInterval = defaults.object(forKey: Keys.quietHoursEnd) as? TimeInterval {
                 quietHoursEnd = Date(timeIntervalSince1970: endInterval)
             }
-            
+
+            // Load silence threshold (default to 4 if not set)
+            let savedThreshold = defaults.double(forKey: Keys.silenceThreshold)
+            silenceThresholdHours = savedThreshold > 0 ? savedThreshold : 4.0
+
             print("📋 Monitoring settings loaded from UserDefaults")
         } else {
             print("📋 Using default monitoring settings (first run)")
