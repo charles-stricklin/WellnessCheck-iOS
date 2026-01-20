@@ -1,28 +1,20 @@
 # WellnessCheck Tasks
 
-**Last Updated:** January 18, 2026
+**Last Updated:** January 20, 2026
 
 ---
 
 ## BLOCKERS FOR TESTFLIGHT (Must Complete First)
 
-### Critical (App Store Rejection Without These)
-- [ ] **Account deletion UI** — Method exists in AuthService, no UI in Settings
-- [ ] Add Crashlytics (Firebase) — for crash reporting
-
-### Core Features Not Wired End-to-End
-- [ ] **Inactivity alert → SMS** — NegativeSpaceService posts notification, nothing sends SMS
-- [ ] **Pattern deviation → SMS** — PatternLearningService posts notification, nothing sends SMS
-- [ ] **Notification tap actions** — No UNUserNotificationCenterDelegate, tapping notifications does nothing
-
 ### Infrastructure
-- [ ] Verify fall alert sound file exists (code loads "fall_alert_sound.mp3")
 - [ ] Create Terms of Service page (About screen links to wellnesscheck.dev/terms)
+- [ ] Add FirebaseCrashlytics to SPM dependencies in Xcode (code is ready, package needs adding)
 
 ---
 
 ## In Progress
-- [ ] TestFlight preparation (blocked by above items)
+- [ ] TestFlight preparation
+- [ ] Device testing
 
 ---
 
@@ -73,6 +65,12 @@
 ---
 
 ## Done
+- [x] Account deletion UI in Settings (App Store requirement) — 2026-01-20
+- [x] Inactivity alert → SMS wired (NegativeSpaceService → CloudFunctionsService) — 2026-01-20
+- [x] Pattern deviation → SMS wired (PatternLearningService → CloudFunctionsService) — 2026-01-20
+- [x] UNUserNotificationCenterDelegate (notification tap handling, "I'm OK" action) — 2026-01-20
+- [x] Crashlytics initialization code added — 2026-01-20
+- [x] Fall alert sound verified (graceful fallback to system sounds works) — 2026-01-20
 - [x] App Store Connect metadata entered (description, keywords, privacy policy) — 2026-01-18
 - [x] Swift 6 concurrency fixes (Timer + Task captures) — 2026-01-18
 - [x] README updated to v0.6.0 — 2026-01-18

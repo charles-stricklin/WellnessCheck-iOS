@@ -22,13 +22,16 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import FirebaseCrashlytics
+import UserNotifications
+import Combine
 
 // MARK: - App Delegate
 
-/// AppDelegate handles Firebase initialization and any other setup that needs
-/// to happen before the SwiftUI lifecycle kicks in. Firebase must be configured
-/// early in the app lifecycle before any other Firebase services are used.
-class AppDelegate: NSObject, UIApplicationDelegate {
+/// AppDelegate handles Firebase initialization, notification setup, and any other
+/// setup that needs to happen before the SwiftUI lifecycle kicks in.
+/// Firebase must be configured early in the app lifecycle before any other Firebase services are used.
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -36,7 +39,85 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Initialize Firebase services
         // This must happen before any Firebase Auth, Firestore, or other calls
         FirebaseApp.configure()
+
+        // Crashlytics is automatically initialized after FirebaseApp.configure()
+        // Uncomment below to disable crash collection in debug builds:
+        // #if DEBUG
+        // Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+        // #endif
+
+        // Set up notification delegate to handle notification taps
+        UNUserNotificationCenter.current().delegate = self
+
+        // Register notification categories with actions
+        registerNotificationCategories()
+
         return true
+    }
+
+    // MARK: - Notification Categories
+
+    /// Register notification categories so we can handle user actions from notifications
+    private func registerNotificationCategories() {
+        // "I'm OK" action for check-in notifications
+        let imOkAction = UNNotificationAction(
+            identifier: "IM_OK_ACTION",
+            title: "I'm OK",
+            options: [.foreground]
+        )
+
+        // Check-in category (shown when approaching silence threshold)
+        let checkInCategory = UNNotificationCategory(
+            identifier: "CHECK_IN",
+            actions: [imOkAction],
+            intentIdentifiers: [],
+            options: []
+        )
+
+        // Urgent check-in category (shown when threshold exceeded)
+        let urgentCategory = UNNotificationCategory(
+            identifier: "URGENT_CHECK_IN",
+            actions: [imOkAction],
+            intentIdentifiers: [],
+            options: [.customDismissAction]
+        )
+
+        UNUserNotificationCenter.current().setNotificationCategories([checkInCategory, urgentCategory])
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    /// Called when a notification is delivered while the app is in foreground
+    /// We show the notification anyway so user sees the check-in prompt
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show banner, sound, and badge even when app is in foreground
+        completionHandler([.banner, .sound, .badge])
+    }
+
+    /// Called when user taps on a notification or selects an action
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let actionIdentifier = response.actionIdentifier
+        let categoryIdentifier = response.notification.request.content.categoryIdentifier
+
+        // Handle "I'm OK" action from check-in notifications
+        if actionIdentifier == "IM_OK_ACTION" ||
+           (actionIdentifier == UNNotificationDefaultActionIdentifier &&
+            (categoryIdentifier == "CHECK_IN" || categoryIdentifier == "URGENT_CHECK_IN")) {
+            // User responded to check-in — record activity and reset alert state
+            Task { @MainActor in
+                NegativeSpaceService.shared.userRespondedToCheckIn()
+            }
+        }
+
+        completionHandler()
     }
 }
 
@@ -69,6 +150,18 @@ struct WellnessCheckApp: App {
 
     /// How long before the screen fades to black due to inactivity (seconds)
     private let inactivityTimeout: TimeInterval = 30
+
+    /// Care Circle ViewModel for alert sending
+    @StateObject private var careCircleViewModel = CareCircleViewModel()
+
+    /// Cloud Functions service for sending SMS alerts
+    @StateObject private var cloudFunctions = CloudFunctionsService()
+
+    /// User's name for alert messages
+    @AppStorage(Constants.userNameKey) private var userName = ""
+
+    /// Combine cancellables for notification observers
+    @State private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Body
 
@@ -136,6 +229,8 @@ struct WellnessCheckApp: App {
                 startInactivityTimer()
                 // Check if user is already signed in from a previous session
                 isSignedIn = Auth.auth().currentUser != nil
+                // Set up alert notification observers
+                setupAlertObservers()
             }
             .onChange(of: scenePhase) { oldPhase, newPhase in
                 switch newPhase {
@@ -189,6 +284,108 @@ struct WellnessCheckApp: App {
             withAnimation(.easeInOut(duration: 0.5)) {
                 isObscured = true
             }
+        }
+    }
+
+    /// Set up observers for inactivity and pattern deviation alerts
+    /// These trigger SMS alerts to Care Circle when thresholds are exceeded
+    private func setupAlertObservers() {
+        // Listen for inactivity threshold exceeded
+        NotificationCenter.default.publisher(for: .inactivityAlertTriggered)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] _ in
+                Task {
+                    await sendInactivityAlert()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Listen for pattern deviation detected
+        NotificationCenter.default.publisher(for: .patternDeviationDetected)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] notification in
+                Task {
+                    await sendPatternDeviationAlert(userInfo: notification.userInfo)
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Send SMS alert to Care Circle when inactivity threshold is exceeded
+    private func sendInactivityAlert() async {
+        // Don't send if no Care Circle members
+        guard !careCircleViewModel.members.isEmpty else {
+            print("⚠️ No Care Circle members to alert for inactivity")
+            return
+        }
+
+        // Get location context if available
+        let locationService = LocationService.shared
+        var alertLocation: AlertLocation? = nil
+
+        if let home = locationService.loadHomeLocation() {
+            // Check if user is currently at home (within home radius)
+            let isHome = locationService.isAtHome()
+            alertLocation = AlertLocation(
+                address: home.address ?? "Location set",
+                isHome: isHome
+            )
+        }
+
+        // Send alert via Cloud Functions → Twilio
+        let result = await cloudFunctions.sendAlert(
+            userName: userName.isEmpty ? "WellnessCheck User" : userName,
+            alertType: .inactivity,
+            location: alertLocation,
+            members: careCircleViewModel.members
+        )
+
+        if result.success {
+            print("✅ Inactivity alert sent to \(result.sent) Care Circle members")
+            // Update NegativeSpaceService state
+            NegativeSpaceService.shared.state = .alertSent
+        } else {
+            print("❌ Failed to send inactivity alert: \(result.error ?? "Unknown error")")
+        }
+    }
+
+    /// Send SMS alert to Care Circle when pattern deviation is detected
+    private func sendPatternDeviationAlert(userInfo: [AnyHashable: Any]?) async {
+        // Don't send if no Care Circle members
+        guard !careCircleViewModel.members.isEmpty else {
+            print("⚠️ No Care Circle members to alert for pattern deviation")
+            return
+        }
+
+        // Extract deviation details from notification (for logging)
+        let deviationDescription = userInfo?["description"] as? String ?? "Unusual activity pattern detected"
+        print("📊 Pattern deviation: \(deviationDescription)")
+
+        // Get location context if available
+        let locationService = LocationService.shared
+        var alertLocation: AlertLocation? = nil
+
+        if let home = locationService.loadHomeLocation() {
+            let isHome = locationService.isAtHome()
+            alertLocation = AlertLocation(
+                address: home.address ?? "Location set",
+                isHome: isHome
+            )
+        }
+
+        // Send alert via Cloud Functions → Twilio
+        // Using missedCheckin type since pattern deviation is conceptually similar
+        let result = await cloudFunctions.sendAlert(
+            userName: userName.isEmpty ? "WellnessCheck User" : userName,
+            alertType: .missedCheckin,
+            location: alertLocation,
+            members: careCircleViewModel.members
+        )
+
+        if result.success {
+            print("✅ Pattern deviation alert sent to \(result.sent) Care Circle members")
+        } else {
+            print("❌ Failed to send pattern deviation alert: \(result.error ?? "Unknown error")")
         }
     }
 }

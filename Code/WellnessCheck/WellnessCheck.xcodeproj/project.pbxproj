@@ -12,6 +12,7 @@
 		567AF9E42F1934F600EBB3DD /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 567AF9E32F1934F600EBB3DD /* FirebaseCore */; };
 		567AF9E62F19350600EBB3DD /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 567AF9E52F19350600EBB3DD /* FirebaseFirestore */; };
 		567AF9E82F19350D00EBB3DD /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 567AF9E72F19350D00EBB3DD /* FirebaseFunctions */; };
+		56ECE0332F2006D4008C817A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 56ECE0322F2006D4008C817A /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 			files = (
 				567AF9E42F1934F600EBB3DD /* FirebaseCore in Frameworks */,
 				567AF9E22F1934F000EBB3DD /* FirebaseAuth in Frameworks */,
+				56ECE0332F2006D4008C817A /* FirebaseCrashlytics in Frameworks */,
 				567AF9E62F19350600EBB3DD /* FirebaseFirestore in Frameworks */,
 				567AF9E82F19350D00EBB3DD /* FirebaseFunctions in Frameworks */,
 			);
@@ -91,6 +93,7 @@
 				567AF9E32F1934F600EBB3DD /* FirebaseCore */,
 				567AF9E52F19350600EBB3DD /* FirebaseFirestore */,
 				567AF9E72F19350D00EBB3DD /* FirebaseFunctions */,
+				56ECE0322F2006D4008C817A /* FirebaseCrashlytics */,
 			);
 			productName = WellnessCheck;
 			productReference = 56BC00202EFA297700B2FA74 /* WellnessCheck.app */;
@@ -407,6 +410,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 567AF9DB2F1932CF00EBB3DD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
+		};
+		56ECE0322F2006D4008C817A /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567AF9DB2F1932CF00EBB3DD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

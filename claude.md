@@ -12,7 +12,7 @@
 
 # WellnessCheck - Project Context
 
-**Last Updated**: January 18, 2026
+**Last Updated**: January 20, 2026
 **Current Version**: v0.6.0
 **Developer**: Charles W. Stricklin
 
@@ -23,13 +23,8 @@
 **Build Status:** ✓ Compiles (Swift 6 clean)
 
 **TestFlight Blockers (must complete before upload):**
-1. Account deletion UI (App Store requirement)
-2. Wire inactivity alert → SMS
-3. Wire pattern deviation → SMS
-4. Add UNUserNotificationCenterDelegate
-5. Add Crashlytics
-6. Verify fall alert sound file
-7. Create Terms of Service page
+1. Create Terms of Service page (wellnesscheck.dev/terms)
+2. Add FirebaseCrashlytics to SPM dependencies in Xcode (code is ready)
 
 See TODO.md "BLOCKERS FOR TESTFLIGHT" section for full details.
 
@@ -52,23 +47,20 @@ WellnessCheck is a safety monitoring iOS app designed to help solo dwellers stay
 - Flights of stairs climbed (HealthKit)
 - Battery level tracking (dead battery detection)
 - Home awareness (user-defined)
-- Learned pattern deviation (14-day learning)
-- Negative space detection (inactivity monitoring)
+- Learned pattern deviation (14-day learning, wired to SMS)
+- Negative space detection (inactivity monitoring, wired to SMS)
 - Silence threshold (2-12 hours configurable)
 - Do Not Disturb / Quiet Hours
 - Care Circle management with SMS invitations
 - Firebase Auth + Firestore sync
 - Full dashboard (4 tabs)
 - Spanish localization
-
-### Built but NOT wired to SMS
-- Inactivity threshold exceeded → alert
-- Pattern deviation detected → alert
+- Account deletion UI (App Store requirement)
+- Notification tap actions with "I'm OK" response
+- Crashlytics crash reporting (requires SPM package)
 
 ### Not Implemented
 - Background monitoring (services stop when app closes)
-- Notification tap actions
-- Account deletion UI
 - Push notifications (FCM)
 
 ---
@@ -78,12 +70,12 @@ WellnessCheck is a safety monitoring iOS app designed to help solo dwellers stay
 | Service | File | Status |
 |---------|------|--------|
 | Fall Detection | FallDetectionService.swift | ✓ Works, sends SMS |
-| Inactivity | NegativeSpaceService.swift | Built, NOT wired to SMS |
-| Pattern Learning | PatternLearningService.swift | Built, NOT wired to SMS |
+| Inactivity | NegativeSpaceService.swift | ✓ Works, sends SMS |
+| Pattern Learning | PatternLearningService.swift | ✓ Works, sends SMS |
 | Battery | BatteryService.swift | ✓ Works |
 | HealthKit | HealthKitService.swift | ✓ Works |
 | SMS | CloudFunctionsService.swift | ✓ Works |
-| Auth | AuthService.swift | ✓ Works (has deleteAccount, no UI) |
+| Auth | AuthService.swift | ✓ Works (with deletion UI) |
 
 ---
 

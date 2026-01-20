@@ -275,6 +275,17 @@ class LocationService: NSObject, ObservableObject {
 
         return distance <= home.radius
     }
+
+    /// Checks if the current location (if available) is within the home geofence
+    /// Returns true if we have a current location and it's within the home radius
+    /// Returns true if we don't have a current location (assume at home if unknown)
+    func isAtHome() -> Bool {
+        guard let current = currentLocation else {
+            // If we don't have current location, assume at home (safer assumption)
+            return true
+        }
+        return isAtHome(location: current)
+    }
 }
 
 // MARK: - CLLocationManagerDelegate

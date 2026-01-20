@@ -1,5 +1,71 @@
 # WellnessCheck Session Log
 
+### 2026-01-20 (Afternoon Session)
+
+**TestFlight Blocker Cleanup — 6 Items in One Pass**
+
+#### What Was Done
+
+**Account Deletion UI (App Store Requirement)**
+- Added "Delete Account" button to Settings tab in SettingsTabView
+- Two-step confirmation alert before deletion
+- Calls existing AuthService.deleteAccount() method
+- Shows loading state during deletion
+- Displays error message if deletion fails (e.g., requires recent login)
+
+**Inactivity Alert → SMS Wired**
+- Added notification observer for `.inactivityAlertTriggered` in WellnessCheckApp
+- When triggered, calls CloudFunctionsService.sendAlert() with alertType: .inactivity
+- Includes location context (home/away) if available
+- Updates NegativeSpaceService state to .alertSent after sending
+
+**Pattern Deviation → SMS Wired**
+- Added notification observer for `.patternDeviationDetected` in WellnessCheckApp
+- When triggered, calls CloudFunctionsService.sendAlert() with alertType: .missedCheckin
+- Extracts deviation description from notification userInfo for context
+
+**UNUserNotificationCenterDelegate Added**
+- AppDelegate now conforms to UNUserNotificationCenterDelegate
+- Registered notification categories: CHECK_IN, URGENT_CHECK_IN
+- Added "I'm OK" action button to notifications
+- Handles notification taps — calls NegativeSpaceService.userRespondedToCheckIn()
+- Shows notifications even when app is in foreground
+
+**Fall Alert Sound Verified**
+- Confirmed no "fall_alert.mp3" file exists in project
+- Code gracefully falls back to system sound 1005 (alarm) on repeat
+- No fix needed — fallback works correctly
+
+**Crashlytics Added**
+- Added `import FirebaseCrashlytics` to WellnessCheckApp.swift
+- Added initialization in AppDelegate.didFinishLaunchingWithOptions
+- DEBUG builds can optionally disable collection (commented out)
+- **Note:** User needs to add FirebaseCrashlytics to SPM dependencies in Xcode
+
+**LocationService Enhancement**
+- Added parameterless `isAtHome()` method for alert context
+- Returns true if current location is within home radius
+- Defaults to true if location unknown (safer assumption)
+
+#### Files Modified
+- WellnessCheckApp.swift (major additions: alert observers, notification delegate, Crashlytics)
+- MainDashboardView.swift (account deletion UI in SettingsTabView)
+- LocationService.swift (added isAtHome() convenience method)
+- TODO.md (updated blockers, marked items complete)
+- SESSION_LOG.md (this entry)
+
+#### TestFlight Blockers Remaining
+1. Create Terms of Service page at wellnesscheck.dev/terms
+2. Add FirebaseCrashlytics to SPM dependencies in Xcode
+
+#### Next Session
+- Add FirebaseCrashlytics to Xcode SPM dependencies
+- Create Terms of Service page content
+- Build and test on device
+- Upload to TestFlight
+
+---
+
 ### 2026-01-18 (Late Night Session)
 
 **TestFlight Prep + Full Audit + App Store Connect Setup**

@@ -1239,6 +1239,11 @@ struct SettingsTabView: View {
     @AppStorage(Constants.hasCompletedOnboardingKey) private var hasCompletedOnboarding = false
     @StateObject private var authService = AuthService()
 
+    /// Controls display of account deletion confirmation
+    @State private var showingDeleteConfirmation = false
+    @State private var showingDeleteError = false
+    @State private var isDeletingAccount = false
+
     var body: some View {
         NavigationStack {
             List {
@@ -1299,6 +1304,50 @@ struct SettingsTabView: View {
                             Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                                 .foregroundColor(.red)
                         }
+                    }
+
+                    // Account deletion section (App Store requirement)
+                    Section {
+                        Button {
+                            showingDeleteConfirmation = true
+                        } label: {
+                            if isDeletingAccount {
+                                HStack {
+                                    ProgressView()
+                                        .padding(.trailing, 8)
+                                    Text("Deleting Account...")
+                                        .foregroundColor(.secondary)
+                                }
+                            } else {
+                                Label("Delete Account", systemImage: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        .disabled(isDeletingAccount)
+                    } footer: {
+                        Text("Permanently deletes your account and all associated data. This cannot be undone.")
+                            .font(.system(size: 12))
+                    }
+                    .alert("Delete Account?", isPresented: $showingDeleteConfirmation) {
+                        Button("Cancel", role: .cancel) { }
+                        Button("Delete", role: .destructive) {
+                            Task {
+                                isDeletingAccount = true
+                                await authService.deleteAccount()
+                                isDeletingAccount = false
+
+                                if authService.errorMessage != nil {
+                                    showingDeleteError = true
+                                }
+                            }
+                        }
+                    } message: {
+                        Text("This will permanently delete your account, Care Circle data, and all settings. This action cannot be undone.")
+                    }
+                    .alert("Unable to Delete Account", isPresented: $showingDeleteError) {
+                        Button("OK", role: .cancel) { }
+                    } message: {
+                        Text(authService.errorMessage ?? "An error occurred. You may need to sign in again before deleting your account.")
                     }
                 }
 
