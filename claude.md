@@ -18,15 +18,11 @@
 
 ---
 
-## CURRENT STATUS: Pre-TestFlight
+## CURRENT STATUS: Ready for TestFlight
 
 **Build Status:** ✓ Compiles (Swift 6 clean)
 
-**TestFlight Blockers (must complete before upload):**
-1. Create Terms of Service page (wellnesscheck.dev/terms)
-2. Add FirebaseCrashlytics to SPM dependencies in Xcode (code is ready)
-
-See TODO.md "BLOCKERS FOR TESTFLIGHT" section for full details.
+**TestFlight Blockers:** None — all cleared 2026-01-20
 
 ---
 
