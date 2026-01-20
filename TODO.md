@@ -6,15 +6,13 @@
 
 ## BLOCKERS FOR TESTFLIGHT (Must Complete First)
 
-### Infrastructure
-- [ ] Create Terms of Service page (About screen links to wellnesscheck.dev/terms)
-- [ ] Add FirebaseCrashlytics to SPM dependencies in Xcode (code is ready, package needs adding)
+None — ready for TestFlight upload!
 
 ---
 
 ## In Progress
-- [ ] TestFlight preparation
 - [ ] Device testing
+- [ ] TestFlight upload
 
 ---
 
@@ -65,6 +63,8 @@
 ---
 
 ## Done
+- [x] Terms of Service published (wellnesscheck.dev/terms) — 2026-01-20
+- [x] FirebaseCrashlytics added to SPM — 2026-01-20
 - [x] Account deletion UI in Settings (App Store requirement) — 2026-01-20
 - [x] Inactivity alert → SMS wired (NegativeSpaceService → CloudFunctionsService) — 2026-01-20
 - [x] Pattern deviation → SMS wired (PatternLearningService → CloudFunctionsService) — 2026-01-20
