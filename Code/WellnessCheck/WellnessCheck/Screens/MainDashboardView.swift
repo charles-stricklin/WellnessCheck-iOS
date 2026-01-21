@@ -106,6 +106,9 @@ struct HomeTabView: View {
     /// Service for calling Cloud Functions (SMS via Twilio)
     @StateObject private var cloudFunctions = CloudFunctionsService()
 
+    /// Fall detection service to check monitoring status
+    @ObservedObject private var fallDetectionService = FallDetectionService.shared
+
     /// Track color scheme for dark mode background
     @Environment(\.colorScheme) private var colorScheme
 
@@ -113,6 +116,13 @@ struct HomeTabView: View {
     @State private var showingImOkResult = false
     @State private var imOkResultSuccess = false
     @State private var imOkResultMessage = ""
+
+    /// Check if fall detection is enabled in settings but not currently monitoring
+    /// This happens when the app is backgrounded (iOS cannot run continuous accelerometer)
+    private var showFallDetectionPausedWarning: Bool {
+        let fallDetectionEnabled = UserDefaults.standard.bool(forKey: "monitoring_fallDetection")
+        return fallDetectionEnabled && !fallDetectionService.isMonitoring
+    }
 
     /// Background color - dark blue in dark mode, system grouped in light mode
     private var backgroundColor: Color {
@@ -141,6 +151,14 @@ struct HomeTabView: View {
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 8)
+
+                    // MARK: - Fall Detection Paused Warning
+                    // Show when fall detection is enabled but app is backgrounded
+                    // iOS cannot run continuous accelerometer monitoring in background
+                    if showFallDetectionPausedWarning {
+                        FallDetectionPausedBanner()
+                            .padding(.horizontal, 16)
+                    }
 
                     // MARK: - Main Status Card
                     MainStatusCard(
@@ -257,6 +275,39 @@ struct HomeTabView: View {
         default:
             return "Good evening"
         }
+    }
+}
+
+// MARK: - Fall Detection Paused Banner
+// Shows when fall detection is enabled but app is backgrounded
+// iOS limitation: continuous accelerometer monitoring requires foreground
+
+struct FallDetectionPausedBanner: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 24))
+                .foregroundColor(.orange)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Fall Detection Paused")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.primary)
+
+                Text("Keep app open for fall protection")
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(16)
+        .background(Color.orange.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 
@@ -1519,7 +1570,7 @@ struct MonitoringSettingsView: View {
                 Toggle("Fall Detection", isOn: $viewModel.fallDetectionEnabled)
                     .font(.system(size: 18))
             } footer: {
-                Text("Alert your Care Circle if you take a hard fall and don't respond.")
+                Text("Alert your Care Circle if you take a hard fall and don't respond.\n\nNote: Fall detection requires the app to be open. When backgrounded, inactivity monitoring continues but fall detection pauses.")
             }
 
             Section {

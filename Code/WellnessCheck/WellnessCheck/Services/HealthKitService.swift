@@ -168,6 +168,13 @@ class HealthKitService: ObservableObject {
             // it just returns no data. We check by trying to query.
             await checkAuthorizationStatus()
 
+            // Enable background delivery for step count so we can track activity
+            // even when the app is in the background
+            BackgroundTaskService.shared.enableHealthKitBackgroundDelivery()
+
+            // Set up observer query to record activity when steps update
+            setupStepCountObserver()
+
         } catch {
             errorMessage = "Failed to request HealthKit authorization: \(error.localizedDescription)"
             isAuthorized = false
@@ -514,6 +521,51 @@ class HealthKitService: ObservableObject {
             end: now,
             options: .strictStartDate
         )
+    }
+
+    // MARK: - Background Delivery Support
+
+    /// Set up observer query for step count changes
+    /// This is called by HealthKit when new step data is recorded, even in background
+    private func setupStepCountObserver() {
+        guard let healthStore = healthStore,
+              let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
+            return
+        }
+
+        let query = HKObserverQuery(sampleType: stepType, predicate: nil) { [weak self] _, completionHandler, error in
+            if let error = error {
+                print("❌ HealthKit observer error: \(error.localizedDescription)")
+                completionHandler()
+                return
+            }
+
+            // Fetch updated step count and record activity
+            Task { @MainActor [weak self] in
+                guard let self = self else {
+                    completionHandler()
+                    return
+                }
+
+                // Fetch today's steps
+                let steps = await self.fetchTodaySteps()
+                self.todaySteps = steps
+
+                // Store in UserDefaults for background task access
+                UserDefaults.standard.set(steps, forKey: "todaySteps")
+
+                // Record activity signal (new steps = proof of life)
+                if steps > 0 {
+                    NegativeSpaceService.shared.recordActivity(.steps, metadata: "\(steps) steps")
+                }
+
+                print("🏃 HealthKit observer: \(steps) steps recorded")
+                completionHandler()
+            }
+        }
+
+        healthStore.execute(query)
+        print("🏃 HealthKit step count observer started")
     }
 
     // MARK: - Historical Data (for Activity Tab)

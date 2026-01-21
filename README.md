@@ -10,8 +10,8 @@ A safety monitoring iOS app for solo dwellers and their Care Circle.
 
 WellnessCheck monitors for falls, inactivity, and wellness concerns, automatically alerting designated Care Circle members when something's wrong.
 
-**Current Version:** v0.6.0
-**Platform:** iOS 16.0+ / Swift 6.x / SwiftUI
+**Current Version:** v0.7.0
+**Platform:** iOS 16.0+ / watchOS 9.0+ / Swift 6.x / SwiftUI
 **Architecture:** MVVM
 **License:** AGPL-3.0
 **Developer:** Charles Stricklin, Stricklin Development, LLC
@@ -22,6 +22,7 @@ WellnessCheck monitors for falls, inactivity, and wellness concerns, automatical
 
 ### Implemented ✓
 - Fall detection (CoreMotion accelerometer)
+- Apple Watch fall detection companion (CMFallDetectionManager, 24/7 monitoring)
 - Step count monitoring (HealthKit)
 - Phone movement proof-of-life (CoreMotion)
 - Flights of stairs climbed (HealthKit)
@@ -46,7 +47,7 @@ WellnessCheck monitors for falls, inactivity, and wellness concerns, automatical
 - Wellness concern detection (pattern clusters)
 - Push notification system
 
-**Future:** WellnessWatch (Care Circle companion app), Apple Watch, geofencing, glucose monitoring, medication tracking
+**Future:** WellnessWatch (Care Circle companion app), geofencing, glucose monitoring, medication tracking
 
 ---
 

@@ -1,5 +1,76 @@
 # WellnessCheck Session Log
 
+### 2026-01-20 (Evening Session)
+
+**Apple Watch Fall Detection Companion App**
+
+#### What Was Done
+
+**watchOS Target Created**
+- Added new watchOS App target: WellnessCheckWatch Watch App
+- Deployment target: watchOS 9.0+ (CMFallDetectionManager requirement)
+- Bundle identifier: com.charlesstricklin.WellnessCheck.watchkitapp
+
+**Watch App Files Created**
+- `WellnessCheckWatchApp.swift` — App entry point with FallDetectionManager as environment object
+- `FallDetectionManager.swift` — Wraps Apple's CMFallDetectionManager for 24/7 fall detection
+  - Handles 30-second countdown with haptic feedback every 5 seconds
+  - "I'm OK" button cancels alert
+  - Sends fall alert to iPhone via WCSession when countdown expires
+- `FallAlertView.swift` — Full-screen countdown UI with large "I'm OK" button
+  - Color transitions: green (>15s) → yellow (>5s) → red (≤5s)
+  - Senior-friendly design with high contrast
+- `ContentView.swift` — Shows status view normally, overlays FallAlertView when fall detected
+- `Assets.xcassets` — Watch app icon and accent color asset catalog
+
+**iPhone Side Wiring**
+- Created `WatchConnectivityService.swift` — Handles WCSession communication with watch
+  - Receives fall alerts from watch via `didReceiveMessage` / `didReceiveUserInfo`
+  - Posts `.watchFallAlertReceived` notification for app to handle
+  - Syncs Care Circle members to watch via Application Context
+- Updated `WellnessCheckApp.swift`:
+  - Added observer for `.watchFallAlertReceived` notification
+  - Created `sendWatchFallAlert()` method to send SMS via Cloud Functions
+  - Initializes WatchConnectivityService on app startup
+
+**Architecture**
+```
+Watch detects fall → Shows 30s countdown → User doesn't respond →
+Watch sends via WCSession → iPhone receives in WatchConnectivityService →
+Posts notification → WellnessCheckApp sends SMS → Twilio → Care Circle
+```
+
+The watch app is intentionally minimal — just a fall detection sensor with an "I'm OK" button. No dashboard, settings, or Care Circle management on the watch.
+
+#### Files Created
+- WellnessCheckWatch Watch App/WellnessCheckWatchApp.swift
+- WellnessCheckWatch Watch App/FallDetectionManager.swift
+- WellnessCheckWatch Watch App/FallAlertView.swift
+- WellnessCheckWatch Watch App/ContentView.swift
+- WellnessCheckWatch Watch App/Assets.xcassets/ (Contents.json files)
+- WellnessCheck/Services/WatchConnectivityService.swift
+
+#### Files Modified
+- WellnessCheckApp.swift (watch alert observer, WatchConnectivityService init)
+- TODO.md (Apple Watch moved from Future to Done)
+- SESSION_LOG.md (this entry)
+
+#### Build Status
+- Both iOS and watchOS targets build successfully
+- Ready for device testing
+
+#### Hardware Requirements
+- Apple Watch Series 4 or later (CMFallDetectionManager requirement)
+- watchOS 9.0+
+- Physical watch required for testing (simulator cannot test fall detection)
+
+#### Next Session
+- Test on physical Apple Watch
+- Verify fall detection → SMS flow end-to-end
+- TestFlight upload
+
+---
+
 ### 2026-01-20 (Afternoon Session)
 
 **TestFlight Blocker Cleanup — 6 Items in One Pass**

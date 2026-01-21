@@ -11,7 +11,7 @@ None — ready for TestFlight upload!
 ---
 
 ## In Progress
-- [ ] Device testing
+- [ ] Device testing (including Apple Watch)
 - [ ] TestFlight upload
 
 ---
@@ -41,7 +41,6 @@ None — ready for TestFlight upload!
 - [ ] Screen unlock data API feasibility
 
 ### Future (v2)
-- [ ] Apple Watch integration
 - [ ] CGM/glucose monitoring
 - [ ] Geofencing for dementia use case
 
@@ -63,6 +62,9 @@ None — ready for TestFlight upload!
 ---
 
 ## Done
+- [x] Apple Watch fall detection companion app — 2026-01-20
+- [x] WatchConnectivityService for iPhone ↔ Watch communication — 2026-01-20
+- [x] Watch fall alerts → iPhone → SMS to Care Circle wired — 2026-01-20
 - [x] Terms of Service published (wellnesscheck.dev/terms) — 2026-01-20
 - [x] FirebaseCrashlytics added to SPM — 2026-01-20
 - [x] Account deletion UI in Settings (App Store requirement) — 2026-01-20

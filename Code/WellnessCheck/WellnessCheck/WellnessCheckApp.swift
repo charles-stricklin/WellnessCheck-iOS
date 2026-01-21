@@ -7,6 +7,10 @@
 //
 //  By Charles Stricklin, Stricklin Development, LLC
 //
+//  UPDATE 2026-01-20: Added Apple Watch fall alert handling.
+//  WatchConnectivityService receives fall alerts from watch companion app.
+//  Alerts are processed and SMS sent to Care Circle when watch countdown expires.
+//
 //  UPDATE 2026-01-17: Added fall detection lifecycle management.
 //  FallDetectionService starts/stops based on app active state.
 //
@@ -25,6 +29,7 @@ import FirebaseAuth
 import FirebaseCrashlytics
 import UserNotifications
 import Combine
+import BackgroundTasks
 
 // MARK: - App Delegate
 
@@ -51,6 +56,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
         // Register notification categories with actions
         registerNotificationCategories()
+
+        // Register background tasks for inactivity monitoring
+        // This MUST be called before the app finishes launching
+        BackgroundTaskService.shared.registerBackgroundTasks()
 
         return true
     }
@@ -231,6 +240,9 @@ struct WellnessCheckApp: App {
                 isSignedIn = Auth.auth().currentUser != nil
                 // Set up alert notification observers
                 setupAlertObservers()
+                // Initialize WatchConnectivity to receive fall alerts from Apple Watch
+                // Accessing the singleton starts WCSession activation
+                _ = WatchConnectivityService.shared
             }
             .onChange(of: scenePhase) { oldPhase, newPhase in
                 switch newPhase {
@@ -245,13 +257,19 @@ struct WellnessCheckApp: App {
                     NegativeSpaceService.shared.startMonitoring()
                     // Record that app was opened (activity signal)
                     NegativeSpaceService.shared.recordActivity(.appOpen)
-                case .inactive, .background:
-                    // App going to background or inactive — fade to black immediately
+                case .inactive:
+                    // App becoming inactive — fade to black
                     inactivityTimer?.invalidate()
                     isObscured = true
-                    // Stop fall detection when app is not active
-                    // (Note: for true background monitoring, would need Background Modes)
+
+                case .background:
+                    // App going to background — stop foreground-only services
+                    inactivityTimer?.invalidate()
+                    isObscured = true
+                    // Stop fall detection (requires continuous accelerometer, not possible in background)
                     FallDetectionService.shared.stopMonitoring()
+                    // Schedule background tasks for inactivity monitoring
+                    BackgroundTaskService.shared.scheduleBackgroundTasks()
                 @unknown default:
                     break
                 }
@@ -287,7 +305,7 @@ struct WellnessCheckApp: App {
         }
     }
 
-    /// Set up observers for inactivity and pattern deviation alerts
+    /// Set up observers for inactivity, pattern deviation, and watch fall alerts
     /// These trigger SMS alerts to Care Circle when thresholds are exceeded
     private func setupAlertObservers() {
         // Listen for inactivity threshold exceeded
@@ -306,6 +324,17 @@ struct WellnessCheckApp: App {
             .sink { [self] notification in
                 Task {
                     await sendPatternDeviationAlert(userInfo: notification.userInfo)
+                }
+            }
+            .store(in: &cancellables)
+
+        // Listen for fall alerts from Apple Watch
+        // Watch app detects fall → shows countdown → sends alert if user doesn't respond
+        NotificationCenter.default.publisher(for: .watchFallAlertReceived)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] notification in
+                Task {
+                    await sendWatchFallAlert(userInfo: notification.userInfo)
                 }
             }
             .store(in: &cancellables)
@@ -386,6 +415,48 @@ struct WellnessCheckApp: App {
             print("✅ Pattern deviation alert sent to \(result.sent) Care Circle members")
         } else {
             print("❌ Failed to send pattern deviation alert: \(result.error ?? "Unknown error")")
+        }
+    }
+
+    /// Send SMS alert to Care Circle when Apple Watch detects fall and countdown expires
+    /// The watch handles fall detection 24/7 and relays alerts to iPhone for SMS sending
+    private func sendWatchFallAlert(userInfo: [AnyHashable: Any]?) async {
+        // Don't send if no Care Circle members
+        guard !careCircleViewModel.members.isEmpty else {
+            print("⚠️ No Care Circle members to alert for watch fall")
+            return
+        }
+
+        // Extract fall details from notification (for logging)
+        let timestamp = userInfo?["timestamp"] as? Date ?? Date()
+        let peakAcceleration = userInfo?["peakAcceleration"] as? Double ?? 0
+        print("⌚ Processing watch fall alert - timestamp: \(timestamp), peak acceleration: \(peakAcceleration)")
+
+        // Get location context if available
+        let locationService = LocationService.shared
+        var alertLocation: AlertLocation? = nil
+
+        if let home = locationService.loadHomeLocation() {
+            let isHome = locationService.isAtHome()
+            alertLocation = AlertLocation(
+                address: home.address ?? "Location set",
+                isHome: isHome
+            )
+        }
+
+        // Send alert via Cloud Functions → Twilio
+        // Use .fall alert type since this is a fall detection event
+        let result = await cloudFunctions.sendAlert(
+            userName: userName.isEmpty ? "WellnessCheck User" : userName,
+            alertType: .fall,
+            location: alertLocation,
+            members: careCircleViewModel.members
+        )
+
+        if result.success {
+            print("✅ Watch fall alert sent to \(result.sent) Care Circle members")
+        } else {
+            print("❌ Failed to send watch fall alert: \(result.error ?? "Unknown error")")
         }
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5605C3EA2F20524E006E8DEF /* WellnessCheckWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5605C3E02F20524D006E8DEF /* WellnessCheckWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		56622B612EFF1DD4006A7C65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56622B602EFF1DD4006A7C65 /* Assets.xcassets */; };
 		567AF9E22F1934F000EBB3DD /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 567AF9E12F1934F000EBB3DD /* FirebaseAuth */; };
 		567AF9E42F1934F600EBB3DD /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 567AF9E32F1934F600EBB3DD /* FirebaseCore */; };
@@ -15,12 +16,42 @@
 		56ECE0332F2006D4008C817A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 56ECE0322F2006D4008C817A /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		5605C3E82F20524E006E8DEF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56BC00182EFA297700B2FA74 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5605C3DF2F20524D006E8DEF;
+			remoteInfo = "WellnessCheckWatch Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5605C3EB2F20524E006E8DEF /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				5605C3EA2F20524E006E8DEF /* WellnessCheckWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		5605C3E02F20524D006E8DEF /* WellnessCheckWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WellnessCheckWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56622B602EFF1DD4006A7C65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56BC00202EFA297700B2FA74 /* WellnessCheck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WellnessCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		5605C3E12F20524D006E8DEF /* WellnessCheckWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "WellnessCheckWatch Watch App";
+			sourceTree = "<group>";
+		};
 		56BC00222EFA297700B2FA74 /* WellnessCheck */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = WellnessCheck;
@@ -29,6 +60,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5605C3DD2F20524D006E8DEF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		56BC001D2EFA297700B2FA74 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -56,6 +94,7 @@
 			children = (
 				56622B602EFF1DD4006A7C65 /* Assets.xcassets */,
 				56BC00222EFA297700B2FA74 /* WellnessCheck */,
+				5605C3E12F20524D006E8DEF /* WellnessCheckWatch Watch App */,
 				567AF9E02F1934F000EBB3DD /* Frameworks */,
 				56BC00212EFA297700B2FA74 /* Products */,
 			);
@@ -65,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				56BC00202EFA297700B2FA74 /* WellnessCheck.app */,
+				5605C3E02F20524D006E8DEF /* WellnessCheckWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,6 +112,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5605C3DF2F20524D006E8DEF /* WellnessCheckWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5605C3EE2F20524E006E8DEF /* Build configuration list for PBXNativeTarget "WellnessCheckWatch Watch App" */;
+			buildPhases = (
+				5605C3DC2F20524D006E8DEF /* Sources */,
+				5605C3DD2F20524D006E8DEF /* Frameworks */,
+				5605C3DE2F20524D006E8DEF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5605C3E12F20524D006E8DEF /* WellnessCheckWatch Watch App */,
+			);
+			name = "WellnessCheckWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "WellnessCheckWatch Watch App";
+			productReference = 5605C3E02F20524D006E8DEF /* WellnessCheckWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		56BC001F2EFA297700B2FA74 /* WellnessCheck */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 56BC002B2EFA297800B2FA74 /* Build configuration list for PBXNativeTarget "WellnessCheck" */;
@@ -79,10 +141,12 @@
 				56BC001C2EFA297700B2FA74 /* Sources */,
 				56BC001D2EFA297700B2FA74 /* Frameworks */,
 				56BC001E2EFA297700B2FA74 /* Resources */,
+				5605C3EB2F20524E006E8DEF /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5605C3E92F20524E006E8DEF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				56BC00222EFA297700B2FA74 /* WellnessCheck */,
@@ -109,6 +173,9 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					5605C3DF2F20524D006E8DEF = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					56BC001F2EFA297700B2FA74 = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -133,11 +200,19 @@
 			projectRoot = "";
 			targets = (
 				56BC001F2EFA297700B2FA74 /* WellnessCheck */,
+				5605C3DF2F20524D006E8DEF /* WellnessCheckWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5605C3DE2F20524D006E8DEF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		56BC001E2EFA297700B2FA74 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -149,6 +224,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5605C3DC2F20524D006E8DEF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		56BC001C2EFA297700B2FA74 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -158,7 +240,81 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		5605C3E92F20524E006E8DEF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5605C3DF2F20524D006E8DEF /* WellnessCheckWatch Watch App */;
+			targetProxy = 5605C3E82F20524E006E8DEF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		5605C3EC2F20524E006E8DEF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BXFM92GSKV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheckWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.charlesstricklin.WellnessCheck;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.charlesstricklin.WellnessCheck.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		5605C3ED2F20524E006E8DEF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BXFM92GSKV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheckWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.charlesstricklin.WellnessCheck;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.charlesstricklin.WellnessCheck.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
 		56BC00292EFA297800B2FA74 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -291,6 +447,7 @@
 				DEVELOPMENT_TEAM = BXFM92GSKV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheck;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WellnessCheck monitors your activity patterns and fall detection to watch for signs you might need help. This data stays on your device and is only used to alert your Care Circle if something seems wrong.";
@@ -309,12 +466,16 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.charlesstricklin.WellnessCheck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -329,6 +490,7 @@
 				DEVELOPMENT_TEAM = BXFM92GSKV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WellnessCheck;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WellnessCheck monitors your activity patterns and fall detection to watch for signs you might need help. This data stays on your device and is only used to alert your Care Circle if something seems wrong.";
@@ -347,18 +509,31 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.charlesstricklin.WellnessCheck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5605C3EE2F20524E006E8DEF /* Build configuration list for PBXNativeTarget "WellnessCheckWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5605C3EC2F20524E006E8DEF /* Debug */,
+				5605C3ED2F20524E006E8DEF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		56BC001B2EFA297700B2FA74 /* Build configuration list for PBXProject "WellnessCheck" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -13,7 +13,7 @@
 # WellnessCheck - Project Context
 
 **Last Updated**: January 20, 2026
-**Current Version**: v0.6.0
+**Current Version**: v0.7.0
 **Developer**: Charles W. Stricklin
 
 ---
@@ -72,6 +72,8 @@ WellnessCheck is a safety monitoring iOS app designed to help solo dwellers stay
 | HealthKit | HealthKitService.swift | ✓ Works |
 | SMS | CloudFunctionsService.swift | ✓ Works |
 | Auth | AuthService.swift | ✓ Works (with deletion UI) |
+| Watch Connectivity | WatchConnectivityService.swift | ✓ Works |
+| Watch Fall Detection | FallDetectionManager.swift (watchOS) | ✓ Works |
 
 ---
 
@@ -79,7 +81,6 @@ WellnessCheck is a safety monitoring iOS app designed to help solo dwellers stay
 
 - Geofencing (dementia/Alzheimer's use case)
 - Known location arrival
-- Apple Watch integration
 - HomeKit signals
 - Bluetooth/CarPlay connections
 - Blood glucose monitoring (Libre 3, Dexcom via HealthKit)
